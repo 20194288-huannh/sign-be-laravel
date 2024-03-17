@@ -1,0 +1,76 @@
+2024-03-17 22:45:01,568 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-03-17 22:45:01,568 INFO Included extra file "/etc/supervisord.d/hermetic-scheduler.conf" during parsing
+2024-03-17 22:45:01,568 INFO Included extra file "/etc/supervisord.d/hermetic-worker.conf" during parsing
+2024-03-17 22:45:01,575 INFO RPC interface 'supervisor' initialized
+2024-03-17 22:45:01,575 CRIT Server 'inet_http_server' running without any HTTP authentication checking
+2024-03-17 22:45:01,575 INFO supervisord started with pid 1
+2024-03-17 22:45:02,579 INFO spawned: 'php-fpm' with pid 7
+2024-03-17 22:45:02,581 INFO spawned: 'hermetic-scheduler_00' with pid 8
+2024-03-17 22:45:02,591 INFO spawned: 'hermetic-worker_00' with pid 9
+2024-03-17 22:45:02,591 INFO spawned: 'hermetic-worker_01' with pid 12
+2024-03-17 22:45:02,595 INFO spawned: 'hermetic-worker_02' with pid 13
+2024-03-17 22:45:02,601 INFO spawned: 'hermetic-worker_03' with pid 14
+2024-03-17 22:45:02,603 INFO spawned: 'hermetic-worker_04' with pid 15
+2024-03-17 22:45:02,605 INFO spawned: 'hermetic-worker_05' with pid 16
+2024-03-17 22:45:02,616 INFO spawned: 'hermetic-worker_06' with pid 17
+2024-03-17 22:45:02,621 INFO spawned: 'hermetic-worker_07' with pid 18
+2024-03-17 22:45:03,923 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,923 INFO success: hermetic-scheduler_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,924 INFO success: hermetic-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,924 INFO success: hermetic-worker_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,924 INFO success: hermetic-worker_02 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,924 INFO success: hermetic-worker_03 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,924 INFO success: hermetic-worker_04 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,924 INFO success: hermetic-worker_05 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,925 INFO success: hermetic-worker_06 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,925 INFO success: hermetic-worker_07 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-03-17 22:45:03,925 INFO reaped unknown pid 11 (exit status 0)
+2024-03-17 22:45:35,969 INFO reaped unknown pid 88 (exit status 0)
+2024-03-17 22:46:03,714 INFO reaped unknown pid 100 (exit status 0)
+2024-03-17 22:47:03,780 INFO reaped unknown pid 110 (exit status 0)
+2024-03-17 22:48:03,769 INFO reaped unknown pid 116 (exit status 0)
+2024-03-17 22:49:03,729 INFO reaped unknown pid 121 (exit status 0)
+2024-03-17 22:50:03,729 INFO reaped unknown pid 125 (exit status 0)
+2024-03-17 22:51:03,733 INFO reaped unknown pid 129 (exit status 0)
+2024-03-17 22:52:03,753 INFO reaped unknown pid 133 (exit status 0)
+2024-03-17 22:53:39,422 INFO reaped unknown pid 137 (exit status 0)
+2024-03-17 22:54:39,419 INFO reaped unknown pid 141 (exit status 0)
+2024-03-17 22:55:39,429 INFO reaped unknown pid 145 (exit status 0)
+2024-03-17 23:24:47,126 INFO reaped unknown pid 149 (exit status 0)
+2024-03-17 23:35:51,479 INFO reaped unknown pid 153 (exit status 0)
+2024-03-17 23:36:51,481 INFO reaped unknown pid 157 (exit status 0)
+2024-03-17 23:37:51,456 INFO reaped unknown pid 161 (exit status 0)
+2024-03-17 23:38:51,465 INFO reaped unknown pid 165 (exit status 0)
+2024-03-17 23:39:51,450 INFO reaped unknown pid 169 (exit status 0)
+2024-03-17 23:40:51,464 INFO reaped unknown pid 173 (exit status 0)
+2024-03-17 23:41:51,445 INFO reaped unknown pid 177 (exit status 0)
+2024-03-17 23:42:51,463 INFO reaped unknown pid 181 (exit status 0)
+2024-03-17 23:43:51,442 INFO reaped unknown pid 185 (exit status 0)
+2024-03-17 23:44:51,471 INFO reaped unknown pid 189 (exit status 0)
+2024-03-17 23:45:51,516 INFO reaped unknown pid 193 (exit status 0)
+2024-03-17 23:46:51,470 INFO reaped unknown pid 197 (exit status 0)
+2024-03-17 23:47:51,506 INFO reaped unknown pid 201 (exit status 0)
+2024-03-17 23:48:51,501 INFO reaped unknown pid 205 (exit status 0)
+2024-03-17 23:49:51,482 INFO reaped unknown pid 209 (exit status 0)
+2024-03-17 23:50:51,500 INFO reaped unknown pid 213 (exit status 0)
+2024-03-17 23:51:51,508 INFO reaped unknown pid 217 (exit status 0)
+2024-03-17 23:52:51,493 INFO reaped unknown pid 221 (exit status 0)
+2024-03-17 23:53:51,466 INFO reaped unknown pid 225 (exit status 0)
+2024-03-17 23:54:51,491 INFO reaped unknown pid 229 (exit status 0)
+2024-03-17 23:55:51,488 INFO reaped unknown pid 233 (exit status 0)
+2024-03-17 23:56:51,490 INFO reaped unknown pid 237 (exit status 0)
+2024-03-17 23:57:51,471 INFO reaped unknown pid 241 (exit status 0)
+2024-03-17 23:58:51,488 INFO reaped unknown pid 245 (exit status 0)
+2024-03-17 23:59:51,485 INFO reaped unknown pid 249 (exit status 0)
+2024-03-18 00:00:51,527 INFO reaped unknown pid 253 (exit status 0)
+2024-03-18 00:01:51,520 INFO reaped unknown pid 257 (exit status 0)
+2024-03-18 00:02:51,504 INFO reaped unknown pid 261 (exit status 0)
+2024-03-18 00:03:51,474 INFO reaped unknown pid 265 (exit status 0)
+2024-03-18 00:04:51,505 INFO reaped unknown pid 269 (exit status 0)
+2024-03-18 00:05:51,489 INFO reaped unknown pid 273 (exit status 0)
+2024-03-18 00:06:51,483 INFO reaped unknown pid 277 (exit status 0)
+2024-03-18 00:07:51,479 INFO reaped unknown pid 281 (exit status 0)
+2024-03-18 00:08:51,500 INFO reaped unknown pid 285 (exit status 0)
+2024-03-18 00:09:51,476 INFO reaped unknown pid 289 (exit status 0)
+2024-03-18 00:10:51,497 INFO reaped unknown pid 293 (exit status 0)
+2024-03-18 00:11:51,456 INFO reaped unknown pid 297 (exit status 0)
