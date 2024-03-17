@@ -1,0 +1,98 @@
+[17-Mar-2024 22:19:13 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:13 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:13 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:13 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:15 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:15 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:15 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:15 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:17 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:17 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:17 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:17 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:19 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:19 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:19 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:19 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:21 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:21 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:21 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:21 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:23 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:23 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:23 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:23 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:25 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:25 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:25 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:25 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:27 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:27 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:27 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:27 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:29 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:29 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:29 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:29 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:32 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:32 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:32 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:32 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:34 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:34 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:34 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:34 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:36 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:36 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:36 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:36 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:38 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:38 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:38 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:38 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
+[17-Mar-2024 22:19:39 Asia/Tokyo] PHP Warning:  require(/work/app/vendor/autoload.php): Failed to open stream: No such file or directory in /work/app/artisan on line 9
+[17-Mar-2024 22:19:39 Asia/Tokyo] PHP Stack trace:
+[17-Mar-2024 22:19:39 Asia/Tokyo] PHP   1. {main}() /work/app/artisan:0
+[17-Mar-2024 22:19:39 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/work/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /work/app/artisan:9
+Stack trace:
+#0 {main}
+  thrown in /work/app/artisan on line 9
