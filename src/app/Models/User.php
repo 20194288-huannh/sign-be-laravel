@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
+    use Notifiable, HasFactory;
 
     protected $casts = [
         'password' => 'hashed',
     ];
+
     // Rest omitted for brevity
 
     /**
@@ -33,5 +35,17 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Scope a query to get user by email.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $email
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetByEmail($query, $email)
+    {
+        return $query->where('email', $email);
     }
 }

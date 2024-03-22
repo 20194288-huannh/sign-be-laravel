@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Resources\UserResource;
+use App\Services\UserService;
 
 class AuthController extends Controller
 {
@@ -12,7 +14,7 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(public UserService $userService)
     {
         $this->middleware('auth:api', ['except' => ['login']]);
     }
@@ -22,16 +24,21 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(LoginRequest $request)
     {
         $credentials = request(['email', 'password']);
 
-        if (!$token = auth()->attempt($credentials)) {
+        $token = auth()->attempt($credentials);
+        if ($token === false) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        $user = $this->userService->getByEmail($request->email);
 
         return response()->ok([
-            'access_token' => $token
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => new UserResource($user)
         ]);
     }
 
