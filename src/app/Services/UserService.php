@@ -15,4 +15,9 @@ class UserService extends BaseService
     {
         return $this->model->getByEmail($email)->first();
     }
+
+    public function register($params)
+    {
+        return $this->model->create($params);
+    }
 }
