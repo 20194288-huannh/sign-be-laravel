@@ -25,6 +25,6 @@ class SignatureService
 
     public function getByUser()
     {
-        return Signature::where('user_id', auth()->id())->get();
+        return Signature::getByUserId(auth()->id())->get();
     }
 }

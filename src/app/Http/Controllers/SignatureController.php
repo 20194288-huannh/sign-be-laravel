@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateSignatureRequest;
+use App\Http\Resources\SignatureResource;
 use App\Services\SignatureService;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,5 +23,6 @@ class SignatureController extends Controller
     public function index()
     {
         $signatures = $this->signatureService->getByUser();
+        return response()->ok(SignatureResource::collection($signatures));
     }
 }
