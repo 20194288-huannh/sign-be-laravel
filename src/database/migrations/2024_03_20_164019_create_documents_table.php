@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('transaction_hash')->nullable();
             $table->string('smart_contract_address')->nullable();
             $table->enum('status', ['Completed', 'Draft', 'Void', 'In-Progress', 'Sent'])->default('Draft');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedInteger('user_id');
             $table->json('reciever')->nullable();
             $table->string('type_document')->nullable();
             $table->timestamps();

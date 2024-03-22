@@ -11,21 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('signs', function (Blueprint $table) {
+        Schema::create('document_signatures', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('document_id');
+            $table->unsignedBigInteger('signature_id');
             $table->integer('x')->nullable();
             $table->integer('y')->nullable();
             $table->integer('width')->nullable();
             $table->integer('height')->nullable();
             $table->integer('number_page')->nullable();
-            $table->string('url')->nullable();
             $table->integer('size')->nullable();
-            $table->string('name')->nullable();
-            $table->string('full_path');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('sha256_original_file');
-            $table->integer('priority')->nullable();
-            $table->enum('type', ['Name', 'Text', 'Signature', 'Checkbox', 'Radio', 'Date']);
             $table->timestamps();
         });
     }
@@ -35,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('signs');
+        Schema::dropIfExists('document_signatures');
     }
 };
