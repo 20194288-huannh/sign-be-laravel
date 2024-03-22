@@ -4,20 +4,15 @@ namespace App\Services;
 
 use App\Models\User;
 
-class UserService extends BaseService
+class UserService
 {
-    public function model()
-    {
-        return User::class;
-    }
-
     public function getByEmail($email)
     {
-        return $this->model->getByEmail($email)->first();
+        return User::getByEmail($email)->first();
     }
 
     public function register($params)
     {
-        return $this->model->create($params);
+        return User::create($params);
     }
 }
