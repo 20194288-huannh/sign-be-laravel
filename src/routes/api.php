@@ -36,5 +36,6 @@ Route::middleware(['auth:user'])->group(function () {
 
     Route::controller(DocumentController::class)->prefix('documents')->group(function () {
         Route::post('sign', 'sign');
+        Route::post('save', 'save');
     });
 });
