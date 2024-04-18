@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateDocumentRequest;
 use App\Http\Requests\SaveDocumentRequest;
+use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
+use App\Models\File;
 use App\Services\DocumentService;
+use Illuminate\Support\Facades\Storage;
 use Snowfire\Beautymail\Beautymail;
 
 class DocumentController extends Controller
@@ -21,10 +24,16 @@ class DocumentController extends Controller
         return response()->ok();
     }
 
+    public function getDocumentByUser($id)
+    {
+        $documents = $this->documentService->getByUser($id);
+        return response()->ok(new DocumentCollection($documents));
+    }
+
     public function save(SaveDocumentRequest $request)
     {
         $document = $this->documentService->saveDocument($request->file);
-        return response()->ok();
+        return response()->ok(new DocumentResource($document));
     }
 
     public function index()
@@ -43,5 +52,11 @@ class DocumentController extends Controller
                 ->to('foo@example.com', 'John Smith')
                 ->subject('Welcome!');
         });
+    }
+
+    public function save1($id)
+    {
+        $file = File::find($id);
+        return Storage::download($file->path);
     }
 }

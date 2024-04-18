@@ -30,8 +30,8 @@ class DocumentService
         $filename = $file->getClientOriginalName();
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         $document = Document::create([
-            'sha256' => hash_file('sha256', storage_path($path)),
-            'type' => Document::STATUS_DRAFT,
+            'sha256' => hash_file('sha256', $file),
+            'status' => Document::STATUS_DRAFT,
             // 'user_id' => auth()->id()
             'user_id' => 1,
         ]);
@@ -41,10 +41,12 @@ class DocumentService
             'path' => $path,
             'type' => $ext
         ]);
+
+        return $document;
     }
 
     public function getByUser()
     {
-        return Document::getByUserId(auth()->id())->get();
+        return Document::getByUserId(auth()->id() ?? 1)->paginate();
     }
 }
