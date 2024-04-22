@@ -9,6 +9,7 @@ use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
 use App\Models\File;
 use App\Services\DocumentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Snowfire\Beautymail\Beautymail;
 
@@ -42,8 +43,9 @@ class DocumentController extends Controller
         return response()->ok(DocumentResource::collection($documents));
     }
 
-    public function sign()
+    public function sign($id, Request $request)
     {
+        $this->documentService->sign($id, $request->all());
         $beautymail = app()->make(Beautymail::class);
         $beautymail->send('mails.sign', [], function($message)
         {

@@ -49,4 +49,10 @@ class DocumentService
     {
         return Document::getByUserId(auth()->id() ?? 1)->paginate();
     }
+
+    public function sign($id, $params)
+    {
+        $document = Document::find($id);
+        return Document::getByUserId(auth()->id() ?? 1)->paginate();
+    }
 }

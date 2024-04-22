@@ -41,9 +41,10 @@ Route::controller(SignatureController::class)->prefix('signatures')->group(funct
 });
 
 Route::controller(DocumentController::class)->prefix('documents')->group(function () {
-    Route::post('sign', 'sign');
+    Route::post('{id}/sign', 'sign');
     Route::post('save', 'save');
     Route::get('', 'index');
+    Route::post('', 'sign');
 });
 
 Route::controller(FileController::class)->prefix('files')->group(function () {
