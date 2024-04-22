@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Document;
 use App\Models\Signature;
 use Illuminate\Support\Facades\Storage;
+use setasign\Fpdi\Fpdi;
 
 class DocumentService
 {
@@ -52,7 +53,29 @@ class DocumentService
 
     public function sign($id, $params)
     {
-        $document = Document::find($id);
-        return Document::getByUserId(auth()->id() ?? 1)->paginate();
+        $document = Document::find(4);
+        $pdf = new Fpdi();
+        $pageCount = $pdf->setSourceFile('storage/app/' . $document->file->path);
+        for ($i = 1; $i < $pageCount; $i++) {
+            $template = $pdf->importPage($i);
+            $size = $pdf->getTemplateSize($template);
+
+            $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
+            $pdf->useTemplate($template);
+
+            foreach ($params['signatures'] as $signature) {
+                $widthDiffPercent = ($signature['width'] - $size['width']) / $signature['width'] * 100;
+                $heightDiffPercent = ($signature['height'] - $size['height']) / $signature['height'] * 100;
+
+                $realXPosition = $signature['left'] - ($widthDiffPercent * $signature['left'] / 100);
+                $realYPosition = $signature['top'] - ($heightDiffPercent * $signature['top'] / 100);
+            }
+
+            if ($i == 1) {
+                $pdf->Image('storage/app/signatures/60wSAkaFGxFs8EsDU9hNeiDMnXBu6RzntsSMJIPp.png', 50, 50, 50, 50, 'png');
+            }
+        }
+
+        return $pdf->Output('storage/app/sign-documents/new.pdf', 'F');
     }
 }

@@ -36,15 +36,15 @@ class test extends Command
             'signatures' => [
                 [
                     'height' => 40,
-                    'left' => 565,
-                    'top' => 53,
+                    'left' => 1035,
+                    'top' => 90,
                     'type' => 'name',
                     'width' => 100
                 ],
                 [
                     'height' => 40,
-                    'left' => 800,
-                    'top' => 136,
+                    'left' => 1047,
+                    'top' => 983,
                     'type' => 'name',
                     'width' => 100
                 ],
@@ -55,5 +55,6 @@ class test extends Command
                 'type' => 9,
             ]
         ];
+        $documentService->sign($id, $params);
     }
 }
