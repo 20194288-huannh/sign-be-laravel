@@ -17,7 +17,7 @@ class SignatureController extends Controller
     public function store(CreateSignatureRequest $request)
     {
         $signature = $this->signatureService->create($request);
-        return response()->ok();
+        return response()->ok(new SignatureResource($signature));
     }
 
     public function index()

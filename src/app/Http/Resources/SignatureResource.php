@@ -19,7 +19,7 @@ class SignatureResource extends JsonResource
             'sha256_original_file' => $this->sha256_original_file,
             'priority' => $this->priority,
             'type' => $this->type,
-            'file' => $this->file
+            'file' => new FileResource($this->file)
         ];
     }
 }

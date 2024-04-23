@@ -22,7 +22,7 @@ class CreateSignatureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file'
+            'signature' => 'required|file'
         ];
     }
 }
