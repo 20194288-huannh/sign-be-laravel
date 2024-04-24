@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 class Signature extends Model
 {
     use HasFactory;
+    const TYPE_IMAGE = 1;
     protected $guarded = [];
 
     public function file(): MorphOne

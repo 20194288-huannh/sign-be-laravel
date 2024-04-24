@@ -39,7 +39,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL', 'http://localhost:8868').'/storage',
+            'url' => env('APP_URL', 'http://localhost:8868') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
@@ -72,6 +72,7 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('documents') => storage_path('app/documents'),
+        public_path('signatures') => storage_path('app/signatures'),
     ],
 
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Signature;
 use App\Services\DocumentService;
 use Illuminate\Console\Command;
 
@@ -35,18 +36,19 @@ class test extends Command
             ],
             'signatures' => [
                 [
-                    'height' => 40,
-                    'left' => 1035,
-                    'top' => 90,
-                    'type' => 'name',
-                    'width' => 100
-                ],
-                [
-                    'height' => 40,
-                    'left' => 1047,
-                    'top' => 983,
-                    'type' => 'name',
-                    'width' => 100
+                    'data' => [
+                        'id' => 62,
+                        'path' => 'http://localhost:8868/signatures/iwtk6ph2UY8YGUlKZsXB8NwFx6g4hrD0zcuSDWKl.png',
+                        'name' => 'storage/signature.png'
+                    ],
+                    'position' => [
+                        'height' => 60,
+                        'left' => 638,
+                        'top' => 112,
+                        'width' => 100
+                    ],
+                    'type' => Signature::TYPE_IMAGE,
+                    'page' => 1
                 ],
             ],
             'users' => [

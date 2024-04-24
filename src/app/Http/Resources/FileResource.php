@@ -18,7 +18,7 @@ class FileResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'path' => $this->path,
+            'path' => config('app.url') . $this->path,
             'size' => $this->size,
             'type' => $this->type,
         ];
