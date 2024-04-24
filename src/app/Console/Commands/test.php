@@ -48,7 +48,8 @@ class test extends Command
                         'width' => 100
                     ],
                     'type' => Signature::TYPE_IMAGE,
-                    'page' => 1
+                    'page' => 1,
+                    'scale' => 1.5
                 ],
             ],
             'users' => [

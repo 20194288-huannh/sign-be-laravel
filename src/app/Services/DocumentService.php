@@ -57,53 +57,69 @@ class DocumentService
         $document = Document::find(4);
         $pdf = new Fpdi();
         $pageCount = $pdf->setSourceFile('storage/app/' . $document->file->path);
-        // for ($i = 1; $i < $pageCount; $i++) {
-        //     $template = $pdf->importPage($i);
-        //     $size = $pdf->getTemplateSize($template);
-
-        //     $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
-        //     $pdf->useTemplate($template);
-
-        //     foreach ($params['signatures'] as $signature) {
-        //         $widthDiffPercent = ($signature['width'] - $size['width']) / $signature['width'] * 100;
-        //         $heightDiffPercent = ($signature['height'] - $size['height']) / $signature['height'] * 100;
-
-        //         $realXPosition = $signature['left'] - ($widthDiffPercent * $signature['left'] / 100);
-        //         $realYPosition = $signature['top'] - ($heightDiffPercent * $signature['top'] / 100);
-        //     }
-
-        //     if ($i == 1) {
-        //         $pdf->Image('storage/app/signatures/60wSAkaFGxFs8EsDU9hNeiDMnXBu6RzntsSMJIPp.png', 50, 50, 50, 50, 'png');
-        //     }
-        // }
         $signatures = $params['signatures'];
         $signatureCount = count($signatures);
         $currentPage = 1;
         $currentSignatureIdx = 0;
+        $saveSignatures = [];
         while ($currentSignatureIdx < $signatureCount && $currentPage <= $pageCount) {
             if ($signatures[$currentSignatureIdx]['page'] > $currentPage) {
                 $currentPage++;
             }
             $position = $signatures[$currentSignatureIdx]['position'];
             $info = $signatures[$currentSignatureIdx]['data'];
+            $scale = $signatures[$currentSignatureIdx]['scale'];
 
             $template = $pdf->importPage($currentPage);
             $size = $pdf->getTemplateSize($template);
 
             $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
             $pdf->useTemplate($template);
+            switch ($signatures[$currentSignatureIdx]['type']) {
+                case Signature::TYPE_IMAGE:
+                    $position = $this->addImageToDocument($pdf, $position, $scale, $info, $size);
+                    $position['page'] = $currentPage;
+                    $saveSignatures[$info['id']] = $position;
+                    break;
+                case 3:
+                    echo "i equals 1";
+                    break;
+                case 4:
+                    echo "i equals 2";
+                    break;
+            }
 
-            $widthDiffPercent = ($position['width'] - $size['width']) / $position['width'] * 100;
-            $heightDiffPercent = ($position['height'] - $size['height']) / $position['height'] * 100;
-            $realXPosition = $position['left'] - ($widthDiffPercent * $position['left'] / 100);
-            $realYPosition = $position['top'] - ($heightDiffPercent * $position['top'] / 100);
-
-            $signatureFile = File::find($info['id']);
-            $pdf->Image('storage/app/' . $signatureFile->path, 50, 50, 50, 50, 'png');
             $currentSignatureIdx++;
         }
+        $document->signatures()->sync($saveSignatures);
 
-
+        $document
         return $pdf->Output('storage/app/sign-documents/new.pdf', 'F');
+    }
+
+    private function addImageToDocument(&$pdf, $position, $scale, $info, $size)
+    {
+        $widthDiffPercent = ($position['width'] - $size['width']) / $position['width'] * 100;
+        $heightDiffPercent = ($position['height'] - $size['height']) / $position['height'] * 100;
+        $realXPosition = $position['left'] - ($widthDiffPercent * $position['left'] / 100);
+        $realYPosition = $position['top'] - ($heightDiffPercent * $position['top'] / 100);
+        $realWidth = $position['width'] / $scale *  (1 - $widthDiffPercent / 100);
+        $realHeight = $position['height'] / $scale *  (1 - $heightDiffPercent / 100);
+
+        $signatureFile = File::find($info['id']);
+        $pdf->Image(
+            'storage/app/' . $signatureFile->path,
+            $realXPosition,
+            $realYPosition,
+            $realWidth,
+            $realHeight,
+            'png'
+        );
+        return [
+            'x' => $realXPosition,
+            'y' => $realYPosition,
+            'width' => $realWidth,
+            'height' => $realHeight,
+        ];
     }
 }
