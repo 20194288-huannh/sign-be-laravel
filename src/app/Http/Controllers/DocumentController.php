@@ -47,8 +47,7 @@ class DocumentController extends Controller
     {
         $this->documentService->sign($id, $request->all());
         $beautymail = app()->make(Beautymail::class);
-        $beautymail->send('mails.sign', [], function($message)
-        {
+        $beautymail->send('mails.sign', [], function ($message) {
             $message
                 ->from('bar@example.com')
                 ->to('foo@example.com', 'John Smith')
@@ -60,5 +59,11 @@ class DocumentController extends Controller
     {
         $file = File::find($id);
         return Storage::download($file->path);
+    }
+
+    public function signOwn(Request $request, $id)
+    {
+        $this->documentService->sign($id, $request->signatures, $request->canvas);
+        return response()->ok();
     }
 }

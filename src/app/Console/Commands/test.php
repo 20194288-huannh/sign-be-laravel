@@ -27,7 +27,7 @@ class test extends Command
      */
     public function handle(DocumentService $documentService)
     {
-        $id = 25;
+        $id = 2;
         $params = [
             'email' => [
                 'content' => 'content',
@@ -37,14 +37,14 @@ class test extends Command
             'signatures' => [
                 [
                     'data' => [
-                        'id' => 62,
-                        'path' => 'http://localhost:8868/signatures/iwtk6ph2UY8YGUlKZsXB8NwFx6g4hrD0zcuSDWKl.png',
+                        'id' => 4,
+                        'path' => "http://localhost:8868/signatures/Q41xTsLLjguIQMFaeLQT1b220QgUolpgMA8V8QpR.png",
                         'name' => 'storage/signature.png'
                     ],
                     'position' => [
                         'height' => 60,
-                        'left' => 638,
-                        'top' => 112,
+                        'left' => 676,
+                        'top' => 270,
                         'width' => 100
                     ],
                     'type' => Signature::TYPE_IMAGE,
@@ -56,8 +56,12 @@ class test extends Command
                 'name' => 'Nguyen Huu Huan',
                 'email' => 'gundamakp01@gmail.com',
                 'type' => 9,
+            ],
+            'canvas' => [
+                'width' => 918,
+                'height' => 1188,
             ]
         ];
-        $documentService->sign($id, $params);
+        $documentService->sign($id, $params['signatures'], $params['canvas']);
     }
 }

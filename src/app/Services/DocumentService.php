@@ -7,6 +7,7 @@ use App\Models\File;
 use App\Models\Signature;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\PdfParser\StreamReader;
 
 class DocumentService
 {
@@ -52,23 +53,24 @@ class DocumentService
         return Document::getByUserId(auth()->id() ?? 1)->paginate();
     }
 
-    public function sign($id, $params)
+    public function sign($id, $signatures, $canvas)
     {
-        $document = Document::find(4);
+        $document = Document::find($id);
         $pdf = new Fpdi();
-        $pageCount = $pdf->setSourceFile('storage/app/' . $document->file->path);
-        $signatures = $params['signatures'];
+        // $pageCount = $pdf->setSourceFile('storage/app/' . $document->file->path);
+        $file = Storage::get($document->file->path);
+        $pageCount = $pdf->setSourceFile(StreamReader::createByString($file));
         $signatureCount = count($signatures);
         $currentPage = 1;
         $currentSignatureIdx = 0;
         $saveSignatures = [];
+        info(123123231);
         while ($currentSignatureIdx < $signatureCount && $currentPage <= $pageCount) {
             if ($signatures[$currentSignatureIdx]['page'] > $currentPage) {
                 $currentPage++;
             }
             $position = $signatures[$currentSignatureIdx]['position'];
             $info = $signatures[$currentSignatureIdx]['data'];
-            $scale = $signatures[$currentSignatureIdx]['scale'];
 
             $template = $pdf->importPage($currentPage);
             $size = $pdf->getTemplateSize($template);
@@ -77,7 +79,7 @@ class DocumentService
             $pdf->useTemplate($template);
             switch ($signatures[$currentSignatureIdx]['type']) {
                 case Signature::TYPE_IMAGE:
-                    $position = $this->addImageToDocument($pdf, $position, $scale, $info, $size);
+                    $position = $this->addImageToDocument($pdf, $position, $info, $size, $canvas);
                     $position['page'] = $currentPage;
                     $saveSignatures[$info['id']] = $position;
                     break;
@@ -93,18 +95,17 @@ class DocumentService
         }
         $document->signatures()->sync($saveSignatures);
 
-        $document
-        return $pdf->Output('storage/app/sign-documents/new.pdf', 'F');
+        return $pdf->Output('storage/app/sign-documents/huan.pdf', 'F');
     }
 
-    private function addImageToDocument(&$pdf, $position, $scale, $info, $size)
+    private function addImageToDocument(&$pdf, $position, $info, $size, $canvas)
     {
-        $widthDiffPercent = ($position['width'] - $size['width']) / $position['width'] * 100;
-        $heightDiffPercent = ($position['height'] - $size['height']) / $position['height'] * 100;
+        $widthDiffPercent = ($canvas['width'] - $size['width']) / $canvas['width'] * 100;
+        $heightDiffPercent = ($canvas['height'] - $size['height']) / $canvas['height'] * 100;
         $realXPosition = $position['left'] - ($widthDiffPercent * $position['left'] / 100);
         $realYPosition = $position['top'] - ($heightDiffPercent * $position['top'] / 100);
-        $realWidth = $position['width'] / $scale *  (1 - $widthDiffPercent / 100);
-        $realHeight = $position['height'] / $scale *  (1 - $heightDiffPercent / 100);
+        $realWidth = $position['width'] *  (1 - $widthDiffPercent / 100);
+        $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
 
         $signatureFile = File::find($info['id']);
         $pdf->Image(
@@ -115,6 +116,7 @@ class DocumentService
             $realHeight,
             'png'
         );
+
         return [
             'x' => $realXPosition,
             'y' => $realYPosition,

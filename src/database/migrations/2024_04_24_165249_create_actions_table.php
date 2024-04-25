@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('action_type');
             $table->bigInteger('object_id');
-            $table->bigInteger('object_type '); // Object: User hoac Document
+            $table->string('object_type'); // Object: User hoac Document
             $table->timestamps();
         });
     }
