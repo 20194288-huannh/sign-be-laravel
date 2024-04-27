@@ -8,6 +8,7 @@ use App\Http\Requests\SaveDocumentRequest;
 use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
 use App\Models\File;
+use App\Models\Receiver;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -43,15 +44,25 @@ class DocumentController extends Controller
         return response()->ok(DocumentResource::collection($documents));
     }
 
-    public function sign($id, Request $request)
+    public function sendSign($id, Request $request)
     {
-        $this->documentService->sign($id, $request->all());
+        $document = $this->documentService->sign($id, $request->signatures, $request->canvas);
         $beautymail = app()->make(Beautymail::class);
-        $beautymail->send('mails.sign', [], function ($message) {
+        $users = collect($request->users);
+        $signer = $users->where('type', Receiver::TYPE_SIGNER)->first();
+        $ccEmail = $users->where('type', Receiver::TYPE_CC)->pluck('email')->all();
+        $beautymail->send('mails.sign', [
+            'document' => $document,
+            'sender' => [
+                'name' => 'Huan Sender'
+            ],
+            'signer' => $signer
+        ], function ($message) use ($signer, $ccEmail) {
             $message
-                ->from('bar@example.com')
-                ->to('foo@example.com', 'John Smith')
-                ->subject('Welcome!');
+                ->from('huan.nh194288@sis.hust.edu.vn')
+                ->to($signer['email'], $signer['name'])
+                ->cc(...$ccEmail)
+                ->subject('Needs Your Signature for the Documents!');
         });
     }
 

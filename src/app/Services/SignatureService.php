@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Signature;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class SignatureService
@@ -27,6 +28,16 @@ class SignatureService
 
     public function getByUser()
     {
-        return Signature::getByUserId(auth()->id())->get();
+        return Signature::getByUserId(auth()->id() ?? 1)->latest()->get();
+    }
+
+    public function delete($id)
+    {
+        $signature = Signature::find($id);
+        // Storage::delete($signature->file->path);
+        return DB::transaction(function () use ($signature) {
+            $signature->file()->delete();
+            return $signature->delete();
+        });
     }
 }

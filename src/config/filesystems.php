@@ -73,6 +73,7 @@ return [
         public_path('storage') => storage_path('app/public'),
         public_path('documents') => storage_path('app/documents'),
         public_path('signatures') => storage_path('app/signatures'),
+        public_path('signed-documents') => storage_path('app/signed-documents'),
     ],
 
 ];

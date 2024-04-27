@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateSignatureRequest;
 use App\Http\Resources\SignatureResource;
+use App\Models\Signature;
 use App\Services\SignatureService;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,5 +25,11 @@ class SignatureController extends Controller
     {
         $signatures = $this->signatureService->getByUser();
         return response()->ok(SignatureResource::collection($signatures));
+    }
+
+    public function destroy($id)
+    {
+        $this->signatureService->delete($id);
+        return response()->ok();
     }
 }

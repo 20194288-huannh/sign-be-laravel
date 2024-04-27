@@ -64,19 +64,25 @@ class DocumentService
         $currentPage = 1;
         $currentSignatureIdx = 0;
         $saveSignatures = [];
-        info(123123231);
+        $needAddPage = true;
         while ($currentSignatureIdx < $signatureCount && $currentPage <= $pageCount) {
             if ($signatures[$currentSignatureIdx]['page'] > $currentPage) {
                 $currentPage++;
+                $needAddPage = true;
+                continue;
             }
+
+            if ($needAddPage) {
+                $template = $pdf->importPage($currentPage);
+                $size = $pdf->getTemplateSize($template);
+                $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
+                $pdf->useTemplate($template);
+                $needAddPage = false;
+            }
+
             $position = $signatures[$currentSignatureIdx]['position'];
             $info = $signatures[$currentSignatureIdx]['data'];
 
-            $template = $pdf->importPage($currentPage);
-            $size = $pdf->getTemplateSize($template);
-
-            $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
-            $pdf->useTemplate($template);
             switch ($signatures[$currentSignatureIdx]['type']) {
                 case Signature::TYPE_IMAGE:
                     $position = $this->addImageToDocument($pdf, $position, $info, $size, $canvas);
@@ -93,9 +99,9 @@ class DocumentService
 
             $currentSignatureIdx++;
         }
-        $document->signatures()->sync($saveSignatures);
-
-        return $pdf->Output('storage/app/sign-documents/huan.pdf', 'F');
+        // $document->signatures()->sync($saveSignatures);
+        $pdf->Output('signed-documents/huan.pdf', 'F');
+        return $document;
     }
 
     private function addImageToDocument(&$pdf, $position, $info, $size, $canvas)
@@ -109,7 +115,7 @@ class DocumentService
 
         $signatureFile = File::find($info['id']);
         $pdf->Image(
-            'storage/app/' . $signatureFile->path,
+            $signatureFile->path,
             $realXPosition,
             $realYPosition,
             $realWidth,

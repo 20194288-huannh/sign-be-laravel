@@ -38,6 +38,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
 Route::controller(SignatureController::class)->prefix('signatures')->group(function () {
     Route::post('', 'store');
+    Route::get('', 'index');
+    Route::delete('{id}', 'destroy');
 });
 
 Route::controller(DocumentController::class)->prefix('documents')->group(function () {
@@ -46,6 +48,7 @@ Route::controller(DocumentController::class)->prefix('documents')->group(functio
     Route::get('', 'index');
     Route::post('', 'sign');
     Route::post('{id}/sign-own', 'signOwn');
+    Route::post('{id}/send-sign', 'sendSign');
 });
 
 Route::controller(FileController::class)->prefix('files')->group(function () {

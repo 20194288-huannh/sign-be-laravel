@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Receiver extends Model
 {
     use HasFactory;
-    const TYPE_SIGNER = 1;
-    const TYPE_CC = 2;
+    const TYPE_SIGNER = 0;
+    const TYPE_CC = 1;
 }
