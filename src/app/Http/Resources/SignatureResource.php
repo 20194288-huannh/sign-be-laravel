@@ -15,11 +15,12 @@ class SignatureResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'user' => $this->user,
             'sha256_original_file' => $this->sha256_original_file,
             'priority' => $this->priority,
             'type' => $this->type,
-            'file' => $this->file
+            'file' => new FileResource($this->file)
         ];
     }
 }

@@ -38,12 +38,17 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
 Route::controller(SignatureController::class)->prefix('signatures')->group(function () {
     Route::post('', 'store');
+    Route::get('', 'index');
+    Route::delete('{id}', 'destroy');
 });
 
 Route::controller(DocumentController::class)->prefix('documents')->group(function () {
-    Route::post('sign', 'sign');
+    Route::post('{id}/sign', 'sign');
     Route::post('save', 'save');
     Route::get('', 'index');
+    Route::post('', 'sign');
+    Route::post('{id}/sign-own', 'signOwn');
+    Route::post('{id}/send-sign', 'sendSign');
 });
 
 Route::controller(FileController::class)->prefix('files')->group(function () {

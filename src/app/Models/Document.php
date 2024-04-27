@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -16,7 +18,7 @@ class Document extends Model
     const STATUS_IN_PROGRESS = 1;
     const STATUS_SENT = 2;
     const STATUS_COMPLETED = 3;
-    
+
     public function file(): MorphOne
     {
         return $this->morphOne(File::class, 'fileable');
@@ -32,5 +34,10 @@ class Document extends Model
     public function scopeGetByUserId($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    public function signatures(): BelongsToMany
+    {
+        return $this->belongsToMany(Signature::class, 'document_signatures');
     }
 }
