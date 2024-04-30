@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -54,4 +55,8 @@ Route::controller(DocumentController::class)->prefix('documents')->group(functio
 Route::controller(FileController::class)->prefix('files')->group(function () {
     Route::get('{id}', 'view');
     Route::get('{id}/download', 'download');
+});
+
+Route::controller(RequestController::class)->prefix('requests')->group(function () {
+    Route::get('{id}', 'show');
 });

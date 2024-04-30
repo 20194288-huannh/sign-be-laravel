@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Document;
 use App\Models\File;
+use App\Models\Request;
 use App\Models\Signature;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
@@ -102,6 +104,35 @@ class DocumentService
         // $document->signatures()->sync($saveSignatures);
         $pdf->Output('signed-documents/huan.pdf', 'F');
         return $document;
+    }
+
+    public function sendSign($id, $params)
+    {
+        $signatures = $params['signatures'];
+        $canvas = $params['canvas'];
+        $users = $params['users'];
+        $email = $params['email'];
+
+        $request = Request::create([
+            'document_id' => $id,
+            'user_id' => auth()->id() ?? 1,
+            'expired_date' => Carbon::parse($email['expired_date']),
+            'content' => $email['content'],
+            'title' => $email['subject'],
+        ]);
+
+        $request->receivers()->createMany($users);
+
+        $signatureCollect = collect($signatures)->map(function ($signature) {
+            return [
+                'page' => $signature['page'],
+                'width' => $signature['position']['width'],
+                'height' => $signature['position']['height'],
+                'top' => $signature['position']['top'],
+                'left' => $signature['position']['left'],
+            ];
+        });
+        $request->requestSignatures()->createMany($signatureCollect);
     }
 
     private function addImageToDocument(&$pdf, $position, $info, $size, $canvas)

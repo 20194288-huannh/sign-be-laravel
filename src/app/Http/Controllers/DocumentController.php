@@ -46,24 +46,31 @@ class DocumentController extends Controller
 
     public function sendSign($id, Request $request)
     {
-        $document = $this->documentService->sign($id, $request->signatures, $request->canvas);
-        $beautymail = app()->make(Beautymail::class);
-        $users = collect($request->users);
-        $signer = $users->where('type', Receiver::TYPE_SIGNER)->first();
-        $ccEmail = $users->where('type', Receiver::TYPE_CC)->pluck('email')->all();
-        $beautymail->send('mails.sign', [
-            'document' => $document,
-            'sender' => [
-                'name' => 'Huan Sender'
-            ],
-            'signer' => $signer
-        ], function ($message) use ($signer, $ccEmail) {
-            $message
-                ->from('huan.nh194288@sis.hust.edu.vn')
-                ->to($signer['email'], $signer['name'])
-                ->cc(...$ccEmail)
-                ->subject('Needs Your Signature for the Documents!');
-        });
+        // $document = $this->documentService->sign($id, $request->signatures, $request->canvas);
+        $result = $this->documentService->sendSign($id, $request->all());
+        // $beautymail = app()->make(Beautymail::class);
+        // $users = collect($request->users);
+        // $signer = $users->where('type', Receiver::TYPE_SIGNER)->first();
+        // $ccEmail = $users->where('type', Receiver::TYPE_CC)->pluck('email')->all();
+        // $beautymail->send('mails.sign', [
+        //     'document' => $document,
+        //     'sender' => [
+        //         'name' => 'Huan Sender'
+        //     ],
+        //     'signer' => $signer
+        // ], function ($message) use ($signer, $ccEmail) {
+        //     $message
+        //         ->from('huan.nh194288@sis.hust.edu.vn')
+        //         ->to($signer['email'], $signer['name'])
+        //         ->cc(...$ccEmail)
+        //         ->subject('Needs Your Signature for the Documents!');
+        // });
+    }
+
+    public function sign($id, Request $request)
+    {
+        $this->documentService->sign($id, $request->signatures, $request->canvas);
+        return response()->ok();
     }
 
     public function save1($id)
