@@ -26,9 +26,9 @@ class DocumentController extends Controller
         return response()->ok();
     }
 
-    public function getDocumentByUser($id)
+    public function getDocumentByUser($id, Request $request)
     {
-        $documents = $this->documentService->getByUser($id);
+        $documents = $this->documentService->getByUser($request->status);
         return response()->ok(new DocumentCollection($documents));
     }
 
@@ -38,9 +38,9 @@ class DocumentController extends Controller
         return response()->ok(new DocumentResource($document));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $documents = $this->documentService->getByUser();
+        $documents = $this->documentService->getByUser($request->status);
         return response()->ok(DocumentResource::collection($documents));
     }
 

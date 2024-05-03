@@ -50,9 +50,10 @@ class DocumentService
         return $document;
     }
 
-    public function getByUser()
+    public function getByUser(string $status)
     {
-        return Document::getByUserId(auth()->id() ?? 1)->paginate();
+        $statusFilter = explode(',', $status);
+        return Document::getByUserId(auth()->id() ?? 1)->hasStatus($statusFilter)->paginate();
     }
 
     public function sign($id, $signatures, $canvas)

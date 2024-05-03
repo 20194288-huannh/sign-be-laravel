@@ -14,10 +14,12 @@ class Document extends Model
     use HasFactory;
     protected $guarded = [];
 
+    const STATUS_NEED_REVIEWS = 0;
     const STATUS_DRAFT = 0;
     const STATUS_IN_PROGRESS = 1;
-    const STATUS_SENT = 2;
     const STATUS_COMPLETED = 3;
+    const STATUS_SENT = 4;
+    const STATUS_EXPIRED = 4;
 
     public function file(): MorphOne
     {
@@ -34,6 +36,11 @@ class Document extends Model
     public function scopeGetByUserId($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    public function scopeHasStatus($query, array $status)
+    {
+        return $query->whereIn('status', $status);
     }
 
     public function signatures(): BelongsToMany
