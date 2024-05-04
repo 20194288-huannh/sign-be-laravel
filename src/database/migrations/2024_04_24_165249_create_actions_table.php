@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('actions', function (Blueprint $table) {
             $table->id();
-            $table->integer('action_type');
-            $table->bigInteger('object_id');
-            $table->string('object_type'); // Object: User hoac Document
+            $table->bigInteger('document_id')->nullable();
+            $table->string('content');
+            $table->string('actionable_type');
+            $table->bigInteger('actionable_id');
             $table->timestamps();
         });
     }

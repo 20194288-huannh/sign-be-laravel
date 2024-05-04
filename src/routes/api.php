@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileController;
@@ -44,6 +45,7 @@ Route::controller(SignatureController::class)->prefix('signatures')->group(funct
 });
 
 Route::controller(DocumentController::class)->prefix('documents')->group(function () {
+    Route::get('statistics', 'getDocumentStatistic');
     Route::post('{id}/sign', 'sign');
     Route::post('save', 'save');
     Route::get('', 'index');
@@ -59,4 +61,8 @@ Route::controller(FileController::class)->prefix('files')->group(function () {
 
 Route::controller(RequestController::class)->prefix('requests')->group(function () {
     Route::get('{id}', 'show');
+});
+
+Route::controller(ActionController::class)->prefix('actions')->group(function () {
+    Route::get('', 'index');
 });

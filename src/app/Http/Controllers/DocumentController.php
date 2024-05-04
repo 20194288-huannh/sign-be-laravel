@@ -44,6 +44,12 @@ class DocumentController extends Controller
         return response()->ok(DocumentResource::collection($documents));
     }
 
+    public function getDocumentStatistic()
+    {
+        $data = $this->documentService->getDocumentStatistic();
+        return response()->ok($data);
+    }
+
     public function sendSign($id, Request $request)
     {
         // $document = $this->documentService->sign($id, $request->signatures, $request->canvas);

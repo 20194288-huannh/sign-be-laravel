@@ -6,20 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Notifications\Action;
 
 class Document extends Model
 {
     use HasFactory;
     protected $guarded = [];
 
-    const STATUS_NEED_REVIEWS = 0;
-    const STATUS_DRAFT = 0;
-    const STATUS_IN_PROGRESS = 1;
-    const STATUS_COMPLETED = 3;
-    const STATUS_SENT = 4;
-    const STATUS_EXPIRED = 4;
+    const STATUS_COMPLETED = 0;
+    const STATUS_DRAFT = 1;
+    const STATUS_EXPIRED = 2;
+    const STATUS_IN_PROGRESS = 3;
+    const STATUS_NEED_REVIEWS = 4;
+    const STATUS_SENT = 5;
 
     public function file(): MorphOne
     {

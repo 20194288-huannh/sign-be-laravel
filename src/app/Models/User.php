@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -47,5 +49,13 @@ class User extends Authenticatable implements JWTSubject
     public function scopeGetByEmail($query, $email)
     {
         return $query->where('email', $email);
+    }
+
+    /**
+     * Get all of the post's comments.
+     */
+    public function actions(): MorphMany
+    {
+        return $this->morphMany(Action::class, 'actionable');
     }
 }

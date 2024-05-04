@@ -6,7 +6,9 @@ use App\Models\Document;
 use App\Models\File;
 use App\Models\Request;
 use App\Models\Signature;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
@@ -37,14 +39,22 @@ class DocumentService
         $document = Document::create([
             'sha256' => hash_file('sha256', $file),
             'status' => Document::STATUS_DRAFT,
-            // 'user_id' => auth()->id()
-            'user_id' => 1,
+            'user_id' => auth()->id() ?? 1,
         ]);
 
         $document->file()->create([
             'name' => $filename,
             'path' => $path,
             'type' => $ext
+        ]);
+
+        $userId = auth()->id() ?? 1;
+
+        $user = User::find($userId);
+
+        $user->actions()->create([
+            'content' => 'uploaded the document',
+            'document_id' => $document->id
         ]);
 
         return $document;
@@ -54,6 +64,19 @@ class DocumentService
     {
         $statusFilter = explode(',', $status);
         return Document::getByUserId(auth()->id() ?? 1)->hasStatus($statusFilter)->paginate();
+    }
+
+    public function getAllDocumentOfUser($userId)
+    {
+        return Document::getByUserId($userId)->get();
+    }
+
+    public function getDocumentStatistic()
+    {
+        $documentCounts = Document::getByUserId(auth()->id() ?? 1)->select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->get();
+        return $documentCounts;
     }
 
     public function sign($id, $signatures, $canvas)
