@@ -14,10 +14,10 @@
         <p>Hello {{$signer['email']}}, </p>
         <p>{{$sender['name']}} sent a copy of the {{ $document->file->name }}</p>
         <div style="background-color:#f8f8f8; display: flex; justify-content: center">
-            <div style="display: flex; width: 90%; align-items:center; padding: 10px">
+            <a style="display: flex; width: 90%; align-items:center; padding: 10px" href="{{ $url }}">
                 <img src="https://ci3.googleusercontent.com/meips/ADKq_NbZSR_i0fvEt7u2zfMzNtyBacCQESHm5WTl4-5QVWLIERYR0hp2_ZR9rtoBdtm9njWtpOSY-JTvvBlJ3bHBclFH-zEbn9NW3uCNLQLBQ61en4XKswcvmya5TGyAeai2=s0-d-e1-ft#https://cdns.sign.co/site/v1.0.1/sign/src/assets/images/document_icon.png" class="CToWUd" data-bit="iit">
                 <span style="float:left;color:#333;padding-left:20px;font-weight:600">{{ $document->file->name }} </span>
-            </div>
+            </a>
         </div>
         <br />
         <div style="border:1px solid transparent;font-family:Arial;color:#676767;text-align:left;font-size:14px;line-height:28px;font-weight:bold;height:28px;width:100%"> Do not share this email</div>

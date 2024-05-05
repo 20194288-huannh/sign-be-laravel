@@ -31,6 +31,11 @@ class DocumentService
         ]);
     }
 
+    public function find($id)
+    {
+        return Document::findOrFail($id);
+    }
+
     public function saveDocument($file)
     {
         $path = Storage::put('documents', $file);
@@ -145,18 +150,22 @@ class DocumentService
             'title' => $email['subject'],
         ]);
 
-        $request->receivers()->createMany($users);
+        $receivers = $request->receivers()->createMany($users);
 
-        $signatureCollect = collect($signatures)->map(function ($signature) {
+        $signatureCollect = collect($signatures)->map(function ($signature) use ($receivers) {
+            $receiver = collect($receivers)->where('email', $signature['receiver']['email'])->first();
+            info($receiver);
             return [
                 'page' => $signature['page'],
                 'width' => $signature['position']['width'],
                 'height' => $signature['position']['height'],
                 'top' => $signature['position']['top'],
                 'left' => $signature['position']['left'],
+                'receiver_id' => $receiver['id']
             ];
         });
         $request->requestSignatures()->createMany($signatureCollect);
+        return $request;
     }
 
     private function addImageToDocument(&$pdf, $position, $info, $size, $canvas)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RequestDetailResource;
 use App\Services\RequestService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class RequestController extends Controller
 {
@@ -12,12 +13,13 @@ class RequestController extends Controller
     {
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
-        $request = $this->requestService->find($id);
-        $receiver = $request->receivers()->where('email', 'gundamakp01@gmail.com')->first();
+        $data = (object) json_decode(Crypt::decryptString($request->token));
+        $request = $this->requestService->find($data->request_id, $data->email);
+        $receiver = $request->receivers()->where('email', $data->email)->first();
         $receiver->actions()->create([
-            'content' => 'uploaded the document',
+            'content' => 'viewed documents',
             'document_id' => $request->document_id
         ]);
         return response()->ok(new RequestDetailResource($request));

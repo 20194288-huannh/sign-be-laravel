@@ -9,8 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class RequestService
 {
-    public function find($id)
+    public function find($id, $email)
     {
-        return Request::find($id);
+        return Request::with(['requestSignatures' => function ($query) use ($email) {
+            $query->whereHas('receiver', function ($q) use ($email) {
+                $q->where('email', $email);
+            });
+            // $query->where('request_id', 2);
+        }])->find($id);
     }
 }

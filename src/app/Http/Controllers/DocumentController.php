@@ -9,8 +9,10 @@ use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
 use App\Models\File;
 use App\Models\Receiver;
+use App\Models\SendSignToken;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Snowfire\Beautymail\Beautymail;
 
@@ -50,27 +52,52 @@ class DocumentController extends Controller
         return response()->ok($data);
     }
 
-    public function sendSign($id, Request $request)
+    public function sendSign($id, Request $sendSignRequest)
     {
-        // $document = $this->documentService->sign($id, $request->signatures, $request->canvas);
-        $result = $this->documentService->sendSign($id, $request->all());
-        // $beautymail = app()->make(Beautymail::class);
-        // $users = collect($request->users);
-        // $signer = $users->where('type', Receiver::TYPE_SIGNER)->first();
-        // $ccEmail = $users->where('type', Receiver::TYPE_CC)->pluck('email')->all();
-        // $beautymail->send('mails.sign', [
-        //     'document' => $document,
-        //     'sender' => [
-        //         'name' => 'Huan Sender'
-        //     ],
-        //     'signer' => $signer
-        // ], function ($message) use ($signer, $ccEmail) {
-        //     $message
-        //         ->from('huan.nh194288@sis.hust.edu.vn')
-        //         ->to($signer['email'], $signer['name'])
-        //         ->cc(...$ccEmail)
-        //         ->subject('Needs Your Signature for the Documents!');
-        // });
+        $request = $this->documentService->sendSign($id, $sendSignRequest->all());
+        $document = $this->documentService->find($id);
+        $this->sendMailNeedSignature($sendSignRequest, $document, $request);
+    }
+
+    private function sendMailNeedSignature($sendSignRequest, $document, $request)
+    {
+        $users = collect($sendSignRequest->users);
+        $signers = $users->where('type', Receiver::TYPE_SIGNER)->all();
+        $ccEmail = $users->where('type', Receiver::TYPE_CC)->pluck('email')->all();
+
+        foreach ($signers as &$signer) {
+            $token = Crypt::encryptString(json_encode([
+                'email' => $signer['email'],
+                'request_id' => $request->id
+            ]));
+            SendSignToken::create([
+                'request_id' => $request->id,
+                'token' => $token
+            ]);
+            $beautymail = app()->make(Beautymail::class);
+            $beautymail->send('mails.sign', [
+                'document' => $document,
+                'sender' => [
+                    'name' => 'Huan Sender'
+                ],
+                'url' => config('app.fe_url') . 'signed-document?token=' . $token,
+                'signer' => $signer
+            ], function ($message) use ($signer, $ccEmail) {
+                if (count($ccEmail)) {
+                    $message
+                        ->from('huan.nh194288@sis.hust.edu.vn')
+                        ->to($signer['email'], $signer['name'])
+                        ->cc(...$ccEmail)
+                        ->subject('Needs Your Signature for the Documents!');
+                } else {
+                    $message
+                        ->from('huan.nh194288@sis.hust.edu.vn')
+                        ->to($signer['email'], $signer['name'])
+                        ->subject('Needs Your Signature for the Documents!');
+                }
+            });
+        }
+        return;
     }
 
     public function sign($id, Request $request)

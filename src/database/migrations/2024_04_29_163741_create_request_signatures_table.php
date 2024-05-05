@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('request_signatures', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('request_id');
+            $table->bigInteger('receiver_id')->nullable();
             $table->integer('top')->nullable();
             $table->integer('left')->nullable();
             $table->integer('width')->nullable();

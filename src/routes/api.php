@@ -60,7 +60,7 @@ Route::controller(FileController::class)->prefix('files')->group(function () {
 });
 
 Route::controller(RequestController::class)->prefix('requests')->group(function () {
-    Route::get('{id}', 'show');
+    Route::get('', 'show');
 });
 
 Route::controller(ActionController::class)->prefix('actions')->group(function () {
