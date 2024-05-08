@@ -15,4 +15,9 @@ class UserService
     {
         return User::create($params);
     }
+
+    public function getById($id)
+    {
+        return User::find($id);
+    }
 }

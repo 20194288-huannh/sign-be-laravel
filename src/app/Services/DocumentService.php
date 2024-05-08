@@ -154,7 +154,6 @@ class DocumentService
 
         $signatureCollect = collect($signatures)->map(function ($signature) use ($receivers) {
             $receiver = collect($receivers)->where('email', $signature['receiver']['email'])->first();
-            info($receiver);
             return [
                 'page' => $signature['page'],
                 'width' => $signature['position']['width'],
