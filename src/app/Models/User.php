@@ -17,6 +17,8 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+    protected $guarded = [];
+
     // Rest omitted for brevity
 
     /**

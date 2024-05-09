@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
@@ -17,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct(public UserService $userService)
     {
-        $this->middleware('auth:user', ['except' => ['login']]);
+        $this->middleware('auth:user', ['except' => ['login', 'register']]);
     }
 
     /**
@@ -31,7 +32,10 @@ class AuthController extends Controller
 
         $token = auth()->attempt($credentials);
         if ($token === false) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->error(
+                Response::HTTP_UNAUTHORIZED,
+                'Incorrect username or password.'
+            );
         }
         $user = $this->userService->getByEmail($request->email);
 
@@ -77,7 +81,7 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        return $this->userService->register($request->validated());
+        return new UserResource($this->userService->register($request->validated()));
     }
 
     /**
