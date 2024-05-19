@@ -28,9 +28,9 @@ class DocumentController extends Controller
         return response()->ok();
     }
 
-    public function getDocumentByUser($id, Request $request)
+    public function getDocumentByUser(Request $request)
     {
-        $documents = $this->documentService->getByUser($request->status);
+        $documents = $this->documentService->getByUser($request->status, $request->filter);
         return response()->ok(new DocumentCollection($documents));
     }
 
@@ -114,7 +114,14 @@ class DocumentController extends Controller
 
     public function signOwn(Request $request, $id)
     {
-        $this->documentService->sign($id, $request->signatures, $request->canvas);
+        $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
+
+        return Storage::download($path);
+    }
+
+    public function history($sha)
+    {
+        $history = $this->documentService->history($sha);
         return response()->ok();
     }
 }

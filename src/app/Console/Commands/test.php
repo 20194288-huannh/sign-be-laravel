@@ -36,18 +36,14 @@ class test extends Command
             ],
             'signatures' => [
                 [
-                    'data' => [
-                        'id' => 4,
-                        'path' => "http://localhost:8868/signatures/Q41xTsLLjguIQMFaeLQT1b220QgUolpgMA8V8QpR.png",
-                        'name' => 'storage/signature.png'
-                    ],
+                    'data' => '123',
                     'position' => [
                         'height' => 60,
                         'left' => 676,
                         'top' => 270,
                         'width' => 100
                     ],
-                    'type' => Signature::TYPE_IMAGE,
+                    'type' => Signature::TYPE_TEXT,
                     'page' => 1,
                     'scale' => 1.5
                 ],
@@ -62,6 +58,6 @@ class test extends Command
                 'height' => 1188,
             ]
         ];
-        $documentService->sign($id, $params['signatures'], $params['canvas']);
+        $documentService->sign(9, $params['signatures'], $params['canvas']);
     }
 }

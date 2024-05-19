@@ -35,7 +35,7 @@ Route::controller((AuthController::class))->prefix('auth')->group(function () {
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
-    Route::get('{id}/documents', [DocumentController::class, 'getDocumentByUser']);
+    Route::get('documents', [DocumentController::class, 'getDocumentByUser']);
 });
 
 Route::controller(SignatureController::class)->prefix('signatures')->group(function () {

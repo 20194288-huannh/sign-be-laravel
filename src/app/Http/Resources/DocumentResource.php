@@ -19,7 +19,7 @@ class DocumentResource extends JsonResource
             'id' => $this->id,
             'sha256' => $this->sha256,
             'status' => $this->status,
-            'user_id' => $this->user_id,
+            'user' => new UserResource($this->user),
             'receiver' => $this->receiver,
             'parent_id' => $this->parent_id,
             'file' => new FileResource($this->file),

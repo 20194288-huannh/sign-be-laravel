@@ -65,15 +65,30 @@ class DocumentService
         return $document;
     }
 
-    public function getByUser(string $status)
+    public function getByUser(string $status, ?string $filter)
     {
         $statusFilter = explode(',', $status);
-        return Document::getByUserId(auth()->id() ?? 1)->hasStatus($statusFilter)->paginate();
+        $query = Document::getByUserId(auth()->id() ?? 1);
+        if ($status) {
+            $query->hasStatus($statusFilter);
+        }
+
+        if ($filter) {
+            $query->whereHas('file', function ($query) use ($filter) {
+                $query->where('name', 'like', '%' . $filter . '%');
+            });
+        }
+        return $query->paginate();
     }
 
     public function getAllDocumentOfUser($userId)
     {
         return Document::getByUserId($userId)->get();
+    }
+
+    public function history($id)
+    {
+        return Document::where('id', $id)->first();
     }
 
     public function getDocumentStatistic()
@@ -120,8 +135,9 @@ class DocumentService
                     $position['page'] = $currentPage;
                     $saveSignatures[$info['id']] = $position;
                     break;
-                case 3:
-                    echo "i equals 1";
+                case Signature::TYPE_TEXT:
+                    $position = $this->addTextToDocument($pdf, $position, $data, $size, $canvas);
+                    $position['page'] = $currentPage;
                     break;
                 case 4:
                     echo "i equals 2";
@@ -130,9 +146,11 @@ class DocumentService
 
             $currentSignatureIdx++;
         }
+
+        $path = 'huan.pdf';
         // $document->signatures()->sync($saveSignatures);
-        $pdf->Output('signed-documents/huan.pdf', 'F');
-        return $document;
+        $pdf->Output('F', $path);
+        return $path;
     }
 
     public function sendSign($id, $params)
@@ -185,6 +203,28 @@ class DocumentService
             $realHeight,
             'png'
         );
+
+        return [
+            'x' => $realXPosition,
+            'y' => $realYPosition,
+            'width' => $realWidth,
+            'height' => $realHeight,
+        ];
+    }
+
+    
+    private function addTextToDocument(&$pdf, $position, $data, $size, $canvas)
+    {
+        $widthDiffPercent = ($canvas['width'] - $size['width']) / $canvas['width'] * 100;
+        $heightDiffPercent = ($canvas['height'] - $size['height']) / $canvas['height'] * 100;
+        $realXPosition = $position['left'] - ($widthDiffPercent * $position['left'] / 100);
+        $realYPosition = $position['top'] - ($heightDiffPercent * $position['top'] / 100);
+        $realWidth = $position['width'] *  (1 - $widthDiffPercent / 100);
+        $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
+
+        $pdf->SetFont('Times','I',18);
+        $pdf->setXY($realXPosition, $realYPosition);
+        $pdf->Write(0, $data); 
 
         return [
             'x' => $realXPosition,
