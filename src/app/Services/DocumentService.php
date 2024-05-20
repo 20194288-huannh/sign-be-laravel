@@ -86,9 +86,9 @@ class DocumentService
         return Document::getByUserId($userId)->get();
     }
 
-    public function history($id)
+    public function history($sha)
     {
-        return Document::where('id', $id)->first();
+        return Document::where('sha', $sha)->first();
     }
 
     public function getDocumentStatistic()
@@ -111,19 +111,22 @@ class DocumentService
         $currentSignatureIdx = 0;
         $saveSignatures = [];
         $needAddPage = true;
-        while ($currentSignatureIdx < $signatureCount && $currentPage <= $pageCount) {
-            if ($signatures[$currentSignatureIdx]['page'] > $currentPage) {
-                $currentPage++;
-                $needAddPage = true;
-                continue;
-            }
-
+        while ($currentPage <= $pageCount) {
             if ($needAddPage) {
                 $template = $pdf->importPage($currentPage);
                 $size = $pdf->getTemplateSize($template);
                 $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
                 $pdf->useTemplate($template);
                 $needAddPage = false;
+            }
+
+            if (
+                !array_key_exists($currentSignatureIdx, $signatures) ||
+                $signatures[$currentSignatureIdx]['page'] > $currentPage
+            ) {
+                $currentPage++;
+                $needAddPage = true;
+                continue;
             }
 
             $position = $signatures[$currentSignatureIdx]['position'];
@@ -136,7 +139,7 @@ class DocumentService
                     $saveSignatures[$info['id']] = $position;
                     break;
                 case Signature::TYPE_TEXT:
-                    $position = $this->addTextToDocument($pdf, $position, $data, $size, $canvas);
+                    $position = $this->addTextToDocument($pdf, $position, $info, $size, $canvas);
                     $position['page'] = $currentPage;
                     break;
                 case 4:
@@ -147,7 +150,7 @@ class DocumentService
             $currentSignatureIdx++;
         }
 
-        $path = 'huan.pdf';
+        $path = 'documents/huan.pdf';
         // $document->signatures()->sync($saveSignatures);
         $pdf->Output('F', $path);
         return $path;
@@ -212,7 +215,7 @@ class DocumentService
         ];
     }
 
-    
+
     private function addTextToDocument(&$pdf, $position, $data, $size, $canvas)
     {
         $widthDiffPercent = ($canvas['width'] - $size['width']) / $canvas['width'] * 100;
@@ -222,9 +225,9 @@ class DocumentService
         $realWidth = $position['width'] *  (1 - $widthDiffPercent / 100);
         $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
 
-        $pdf->SetFont('Times','I',18);
+        $pdf->SetFont('Times', 'I', 18);
         $pdf->setXY($realXPosition, $realYPosition);
-        $pdf->Write(0, $data); 
+        $pdf->Write(0, $data);
 
         return [
             'x' => $realXPosition,
