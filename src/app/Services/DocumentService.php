@@ -65,6 +65,36 @@ class DocumentService
         return $document;
     }
 
+
+    public function saveSignOwn($file, $sha, int $id)
+    {
+        $path = Storage::put('documents', $file);
+        $filename = $file->getClientOriginalName();
+        $ext = pathinfo($path, PATHINFO_EXTENSION);
+        $userId = auth()->id() ?? 1;
+        $document = Document::create([
+            'sha256' => $sha,
+            'status' => Document::STATUS_COMPLETED,
+            'user_id' => $userId,
+            'parent_id' => $id
+        ]);
+
+        $document->file()->create([
+            'name' => $filename,
+            'path' => $path,
+            'type' => $ext
+        ]);
+
+        $user = User::find($userId);
+
+        $user->actions()->create([
+            'content' => ' sign own',
+            'document_id' => $document->id
+        ]);
+
+        return $document;
+    }
+
     public function getByUser(string $status, ?string $filter)
     {
         $statusFilter = explode(',', $status);
@@ -78,7 +108,7 @@ class DocumentService
                 $query->where('name', 'like', '%' . $filter . '%');
             });
         }
-        return $query->paginate();
+        return $query->latest()->paginate();
     }
 
     public function getAllDocumentOfUser($userId)
@@ -88,7 +118,7 @@ class DocumentService
 
     public function history($sha)
     {
-        return Document::where('sha', $sha)->first();
+        return Document::where('sha256', $sha)->first();
     }
 
     public function getDocumentStatistic()
@@ -216,7 +246,7 @@ class DocumentService
     }
 
 
-    private function addTextToDocument(&$pdf, $position, $data, $size, $canvas)
+    private function addTextToDocument(&$pdf, $position, string $data, $size, $canvas)
     {
         $widthDiffPercent = ($canvas['width'] - $size['width']) / $canvas['width'] * 100;
         $heightDiffPercent = ($canvas['height'] - $size['height']) / $canvas['height'] * 100;

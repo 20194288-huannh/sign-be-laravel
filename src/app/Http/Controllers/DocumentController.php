@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateDocumentRequest;
 use App\Http\Requests\SaveDocumentRequest;
+use App\Http\Requests\SaveSignOwnDocumentRequest;
 use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
+use App\Http\Resources\HistoryResource;
 use App\Models\File;
 use App\Models\Receiver;
 use App\Models\SendSignToken;
@@ -40,9 +42,15 @@ class DocumentController extends Controller
         return response()->ok(new DocumentResource($document));
     }
 
+    public function saveSignOwn(SaveSignOwnDocumentRequest $request, int $id)
+    {
+        $document = $this->documentService->saveSignOwn($request->file, $request->sha, $id);
+        return response()->ok(new DocumentResource($document));
+    }
+
     public function index(Request $request)
     {
-        $documents = $this->documentService->getByUser($request->status);
+        $documents = $this->documentService->getByUser($request->status, $request->filter);
         return response()->ok(DocumentResource::collection($documents));
     }
 
@@ -121,7 +129,23 @@ class DocumentController extends Controller
 
     public function history($sha)
     {
+        $data = [];
         $history = $this->documentService->history($sha);
-        return response()->ok();
+        $this->flatNestedDocuments($history, $data);
+        return response()->ok(DocumentResource::collection($data));
+    }
+
+    public function flatNestedDocuments($document, &$array)
+    {
+        if (!$document) {
+            return;
+        }
+        if (!$document->parent_id) {
+            array_push($array, $document);
+            return;
+        }
+        array_push($array, $document);
+        $this->flatNestedDocuments($document->parent, $array);
+        return;
     }
 }

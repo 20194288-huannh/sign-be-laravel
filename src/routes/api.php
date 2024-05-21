@@ -50,8 +50,10 @@ Route::controller(DocumentController::class)->prefix('documents')->group(functio
     Route::post('save', 'save');
     Route::get('', 'index');
     Route::post('', 'sign');
-    Route::post('{id}/sign-own', 'signOwn');
+    Route::post('{id}/view-own', 'signOwn');
+    Route::post('{id}/sign-own', 'saveSignOwn');
     Route::post('{id}/send-sign', 'sendSign');
+    Route::post('{sha}/history', 'history');
 });
 
 Route::controller(FileController::class)->prefix('files')->group(function () {
