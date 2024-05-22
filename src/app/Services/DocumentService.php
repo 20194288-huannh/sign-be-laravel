@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
+use Illuminate\Support\Str;
 
 class DocumentService
 {
@@ -36,60 +37,20 @@ class DocumentService
         return Document::findOrFail($id);
     }
 
-    public function saveDocument($file)
+    public function saveDocument(string $path, string $filename, string $sha, ?int $parentId, $status)
     {
-        $path = Storage::put('documents', $file);
-        $filename = $file->getClientOriginalName();
         $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $document = Document::create([
-            'sha256' => hash_file('sha256', $file),
-            'status' => Document::STATUS_DRAFT,
-            'user_id' => auth()->id() ?? 1,
-        ]);
-
-        $document->file()->create([
-            'name' => $filename,
-            'path' => $path,
-            'type' => $ext
-        ]);
-
-        $userId = auth()->id() ?? 1;
-
-        $user = User::find($userId);
-
-        $user->actions()->create([
-            'content' => 'uploaded the document',
-            'document_id' => $document->id
-        ]);
-
-        return $document;
-    }
-
-
-    public function saveSignOwn($file, $sha, int $id)
-    {
-        $path = Storage::put('documents', $file);
-        $filename = $file->getClientOriginalName();
-        $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $userId = auth()->id() ?? 1;
         $document = Document::create([
             'sha256' => $sha,
-            'status' => Document::STATUS_COMPLETED,
-            'user_id' => $userId,
-            'parent_id' => $id
+            'status' => $status,
+            'user_id' => auth()->id() ?? 1,
+            'parent_id' => $parentId
         ]);
 
         $document->file()->create([
             'name' => $filename,
             'path' => $path,
             'type' => $ext
-        ]);
-
-        $user = User::find($userId);
-
-        $user->actions()->create([
-            'content' => ' sign own',
-            'document_id' => $document->id
         ]);
 
         return $document;
@@ -169,6 +130,7 @@ class DocumentService
                     $saveSignatures[$info['id']] = $position;
                     break;
                 case Signature::TYPE_TEXT:
+                    info('text');
                     $position = $this->addTextToDocument($pdf, $position, $info, $size, $canvas);
                     $position['page'] = $currentPage;
                     break;
@@ -180,21 +142,39 @@ class DocumentService
             $currentSignatureIdx++;
         }
 
-        $path = 'documents/huan.pdf';
+        $filename = Str::random(40);
+        $path = 'documents/' . $filename . '.pdf';
         // $document->signatures()->sync($saveSignatures);
         $pdf->Output('F', $path);
         return $path;
     }
 
-    public function sendSign($id, $params)
+    public function sendSign($documentId, $params)
     {
-        $signatures = $params['signatures'];
+        $allSignatures = $params['signatures'];
         $canvas = $params['canvas'];
         $users = $params['users'];
         $email = $params['email'];
 
+        // Chia ra lam mang yeu cau chu ky, va mang chu ky
+        $requiredSignatures = array_values(array_filter($allSignatures, function ($signature) {
+            return array_key_exists('receiver', $signature);
+        }));
+
+        $signatures = array_values(array_filter($allSignatures, function ($signature) {
+            return !array_key_exists('receiver', $signature);
+        }));
+
+        // Ký lên văn bản
+        if ($signatures) {
+            $document = Document::find($documentId);
+            $path = $this->sign($documentId, $signatures, $canvas);
+            $newDocument = $this->saveDocument($path, $document->file->name, hash_file('sha256', $path), $documentId, Document::STATUS_SENT);
+            $documentId = $newDocument->id;
+        }
+
         $request = Request::create([
-            'document_id' => $id,
+            'document_id' => $documentId,
             'user_id' => auth()->id() ?? 1,
             'expired_date' => Carbon::parse($email['expired_date']),
             'content' => $email['content'],
@@ -203,7 +183,8 @@ class DocumentService
 
         $receivers = $request->receivers()->createMany($users);
 
-        $signatureCollect = collect($signatures)->map(function ($signature) use ($receivers) {
+        // Lưu thông tin về các vị trí cần chữ ký
+        $signatureCollect = collect($requiredSignatures)->map(function ($signature) use ($receivers) {
             $receiver = collect($receivers)->where('email', $signature['receiver']['email'])->first();
             return [
                 'page' => $signature['page'],
@@ -215,7 +196,11 @@ class DocumentService
             ];
         });
         $request->requestSignatures()->createMany($signatureCollect);
-        return $request;
+        return [
+            'request' => $request,
+            'newDocument' => $newDocument,
+            'receivers' => $receivers
+        ];
     }
 
     private function addImageToDocument(&$pdf, $position, $info, $size, $canvas)

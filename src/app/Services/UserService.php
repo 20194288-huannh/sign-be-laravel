@@ -20,4 +20,14 @@ class UserService
     {
         return User::find($id);
     }
+
+    public function storeAction($id, $documentId, $content)
+    {
+        $user = User::find(auth()->id() ?? 1);
+
+        $user->actions()->create([
+            'content' => $content,
+            'document_id' => $documentId
+        ]);
+    }
 }

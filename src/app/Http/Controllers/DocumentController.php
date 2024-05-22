@@ -9,10 +9,15 @@ use App\Http\Requests\SaveSignOwnDocumentRequest;
 use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
 use App\Http\Resources\HistoryResource;
+use App\Models\Document;
 use App\Models\File;
 use App\Models\Receiver;
+use App\Models\Request as ModelsRequest;
 use App\Models\SendSignToken;
+use App\Models\User;
 use App\Services\DocumentService;
+use App\Services\RequestService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
@@ -20,8 +25,11 @@ use Snowfire\Beautymail\Beautymail;
 
 class DocumentController extends Controller
 {
-    public function __construct(private DocumentService $documentService)
-    {
+    public function __construct(
+        private DocumentService $documentService,
+        private UserService $userService,
+        private RequestService $requestService
+    ) {
     }
 
     public function store(CreateDocumentRequest $request)
@@ -38,13 +46,30 @@ class DocumentController extends Controller
 
     public function save(SaveDocumentRequest $request)
     {
-        $document = $this->documentService->saveDocument($request->file);
+        // Get file info
+        $path = Storage::put('documents', $request->file);
+        $filename = $request->file->getClientOriginalName();
+        $sha = hash_file('sha256', $request->file);
+
+        // Store file info
+        $document = $this->documentService->saveDocument($path, $filename, $sha, null, Document::STATUS_DRAFT);
+
+        // Store action upload file of user
+        $this->userService->storeAction(auth()->id() ?? 1, $document->id, ' uploaded the document');
         return response()->ok(new DocumentResource($document));
     }
 
     public function saveSignOwn(SaveSignOwnDocumentRequest $request, int $id)
     {
-        $document = $this->documentService->saveSignOwn($request->file, $request->sha, $id);
+        // Get file info
+        $path = Storage::put('documents', $request->file);
+        $filename = $request->file->getClientOriginalName();
+
+        // Store file info
+        $document = $this->documentService->saveDocument($path, $filename, $request->sha, $id, Document::STATUS_COMPLETED);
+
+        // Store action upload file of user
+        $this->userService->storeAction(auth()->id() ?? 1, $document->id, ' sign own');
         return response()->ok(new DocumentResource($document));
     }
 
@@ -62,9 +87,19 @@ class DocumentController extends Controller
 
     public function sendSign($id, Request $sendSignRequest)
     {
-        $request = $this->documentService->sendSign($id, $sendSignRequest->all());
+        $data = $this->documentService->sendSign($id, $sendSignRequest->all());
+
+        $content = ' send email to ';
+        foreach ($data['receivers'] as $receiver) {
+            $content = $content . $receiver->name . '<' . $receiver->email . '>, ';
+        }
+        $this->userService->storeAction(
+            auth()->user() ?? 1,
+            $data['newDocument']['id'],
+            "$content."
+        );
         $document = $this->documentService->find($id);
-        $this->sendMailNeedSignature($sendSignRequest, $document, $request);
+        $this->sendMailNeedSignature($sendSignRequest, $document, $data['request']);
     }
 
     private function sendMailNeedSignature($sendSignRequest, $document, $request)
@@ -110,7 +145,33 @@ class DocumentController extends Controller
 
     public function sign($id, Request $request)
     {
-        $this->documentService->sign($id, $request->signatures, $request->canvas);
+        $document = Document::find($id);
+        $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
+        $this->documentService->saveDocument(
+            $path,
+            $document->file->name,
+            hash_file('sha256', $path),
+            $id,
+            Document::STATUS_IN_PROGRESS
+        );
+        $token = $request->token;
+
+        $data = (object) json_decode(Crypt::decryptString($token));
+        $request = $this->requestService->find($data->request_id, $data->email);
+        $receiver = $request->receivers()->where('email', $data->email)->first();
+        // Ký
+
+        $receiver->actions()->updateOrCreate([
+            'content' => "<$receiver->email> signed the document",
+            'document_id' => $request->document_id
+        ], []);
+
+        $receiver->actions()->updateOrCreate([
+            'content' => "<$receiver->email> completed the document",
+            'document_id' => $request->document_id
+        ], []);
+
+        SendSignToken::where('token', $token)->delete();
         return response()->ok();
     }
 

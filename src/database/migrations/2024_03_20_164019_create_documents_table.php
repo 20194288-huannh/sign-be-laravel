@@ -18,6 +18,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(Document::STATUS_DRAFT);
             $table->unsignedInteger('user_id');
             $table->json('receiver')->nullable();
+            $table->tinyInteger('is_show')->default(1);
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->timestamps();
         });
