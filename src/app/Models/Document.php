@@ -46,6 +46,11 @@ class Document extends Model
         return $query->whereIn('status', $status);
     }
 
+    public function scopeIsShow($query)
+    {
+        return $query->where('is_show', 1);
+    }
+
     public function signatures(): BelongsToMany
     {
         return $this->belongsToMany(Signature::class, 'document_signatures');
@@ -59,5 +64,10 @@ class Document extends Model
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Document::class, 'parent_id');
+    }
+
+    public function request(): BelongsTo
+    {
+        return $this->belongsTo(Request::class, 'request_id');
     }
 }

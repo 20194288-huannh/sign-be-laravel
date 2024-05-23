@@ -17,7 +17,8 @@ class ReceiverResource extends JsonResource
         return [
             'email' => $this->email,
             'name' => $this->name,
-            'type' => $this->type
+            'type' => $this->type,
+            'status' => $this->status,
         ];
     }
 }

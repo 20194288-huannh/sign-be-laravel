@@ -37,14 +37,15 @@ class DocumentService
         return Document::findOrFail($id);
     }
 
-    public function saveDocument(string $path, string $filename, string $sha, ?int $parentId, $status)
+    public function saveDocument(string $path, string $filename, string $sha, ?int $parentId, $status, ?int $requestId)
     {
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         $document = Document::create([
             'sha256' => $sha,
             'status' => $status,
             'user_id' => auth()->id() ?? 1,
-            'parent_id' => $parentId
+            'parent_id' => $parentId,
+            'request_id' => $requestId
         ]);
 
         $document->file()->create([
@@ -59,7 +60,7 @@ class DocumentService
     public function getByUser(string $status, ?string $filter)
     {
         $statusFilter = explode(',', $status);
-        $query = Document::getByUserId(auth()->id() ?? 1);
+        $query = Document::getByUserId(auth()->id() ?? 1)->isShow();
         if ($status) {
             $query->hasStatus($statusFilter);
         }
@@ -74,6 +75,11 @@ class DocumentService
 
     public function getAllDocumentOfUser($userId)
     {
+        return Document::getByUserId($userId)->isShow()->get();
+    }
+
+    public function getAllDocument($userId)
+    {
         return Document::getByUserId($userId)->get();
     }
 
@@ -84,7 +90,7 @@ class DocumentService
 
     public function getDocumentStatistic()
     {
-        $documentCounts = Document::getByUserId(auth()->id() ?? 1)->select('status', DB::raw('COUNT(*) as count'))
+        $documentCounts = Document::getByUserId(auth()->id() ?? 1)->isShow()->select('status', DB::raw('COUNT(*) as count'))
             ->groupBy('status')
             ->get();
         return $documentCounts;
@@ -130,7 +136,6 @@ class DocumentService
                     $saveSignatures[$info['id']] = $position;
                     break;
                 case Signature::TYPE_TEXT:
-                    info('text');
                     $position = $this->addTextToDocument($pdf, $position, $info, $size, $canvas);
                     $position['page'] = $currentPage;
                     break;
@@ -165,21 +170,29 @@ class DocumentService
             return !array_key_exists('receiver', $signature);
         }));
 
-        // Ký lên văn bản
-        if ($signatures) {
-            $document = Document::find($documentId);
-            $path = $this->sign($documentId, $signatures, $canvas);
-            $newDocument = $this->saveDocument($path, $document->file->name, hash_file('sha256', $path), $documentId, Document::STATUS_SENT);
-            $documentId = $newDocument->id;
-        }
 
         $request = Request::create([
-            'document_id' => $documentId,
             'user_id' => auth()->id() ?? 1,
             'expired_date' => Carbon::parse($email['expired_date']),
             'content' => $email['content'],
             'title' => $email['subject'],
         ]);
+
+        // Ký lên văn bản
+        $document = Document::find($documentId);
+        $path = $document->file->path;
+        if ($signatures) {
+            $path = $this->sign($documentId, $signatures, $canvas);
+        }
+        $newDocument = $this->saveDocument(
+            $path,
+            $document->file->name,
+            hash_file('sha256', $path),
+            $documentId,
+            Document::STATUS_SENT,
+            $request->id
+        );
+        $document->update(['is_show' => 0]);
 
         $receivers = $request->receivers()->createMany($users);
 

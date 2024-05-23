@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email');
             $table->bigInteger('request_id');
             $table->tinyInteger('type')->default(Receiver::TYPE_SIGNER);
+            $table->tinyInteger('status')->default(Receiver::STATUS_SENT);
             $table->timestamps();
         });
     }

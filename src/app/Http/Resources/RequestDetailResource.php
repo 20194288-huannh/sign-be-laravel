@@ -22,7 +22,7 @@ class RequestDetailResource extends JsonResource
                 'content' => $this->content
             ],
             'signatures' => RequestSignatureResource::collection($this->requestSignatures),
-            'document' => new DocumentResource($this->document),
+            'document' => new DocumentResource($this->documents()->isShow()->first()),
             'canvas' => [
                 'width' => 0,
                 'height' => 0,

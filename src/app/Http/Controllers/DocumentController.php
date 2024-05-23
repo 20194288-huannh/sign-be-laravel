@@ -6,15 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateDocumentRequest;
 use App\Http\Requests\SaveDocumentRequest;
 use App\Http\Requests\SaveSignOwnDocumentRequest;
+use App\Http\Resources\ActionResource;
 use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
 use App\Http\Resources\HistoryResource;
 use App\Models\Document;
 use App\Models\File;
+use App\Models\Notification;
 use App\Models\Receiver;
 use App\Models\Request as ModelsRequest;
 use App\Models\SendSignToken;
 use App\Models\User;
+use App\Services\ActionService;
 use App\Services\DocumentService;
 use App\Services\RequestService;
 use App\Services\UserService;
@@ -28,7 +31,8 @@ class DocumentController extends Controller
     public function __construct(
         private DocumentService $documentService,
         private UserService $userService,
-        private RequestService $requestService
+        private RequestService $requestService,
+        private ActionService $actionService
     ) {
     }
 
@@ -52,7 +56,7 @@ class DocumentController extends Controller
         $sha = hash_file('sha256', $request->file);
 
         // Store file info
-        $document = $this->documentService->saveDocument($path, $filename, $sha, null, Document::STATUS_DRAFT);
+        $document = $this->documentService->saveDocument($path, $filename, $sha, null, Document::STATUS_DRAFT, null);
 
         // Store action upload file of user
         $this->userService->storeAction(auth()->id() ?? 1, $document->id, ' uploaded the document');
@@ -66,7 +70,7 @@ class DocumentController extends Controller
         $filename = $request->file->getClientOriginalName();
 
         // Store file info
-        $document = $this->documentService->saveDocument($path, $filename, $request->sha, $id, Document::STATUS_COMPLETED);
+        $document = $this->documentService->saveDocument($path, $filename, $request->sha, $id, Document::STATUS_COMPLETED, null);
 
         // Store action upload file of user
         $this->userService->storeAction(auth()->id() ?? 1, $document->id, ' sign own');
@@ -77,6 +81,12 @@ class DocumentController extends Controller
     {
         $documents = $this->documentService->getByUser($request->status, $request->filter);
         return response()->ok(DocumentResource::collection($documents));
+    }
+
+    public function show(int $id)
+    {
+        $document = $this->documentService->find($id);
+        return response()->ok(new DocumentResource($document));
     }
 
     public function getDocumentStatistic()
@@ -146,31 +156,41 @@ class DocumentController extends Controller
     public function sign($id, Request $request)
     {
         $document = Document::find($id);
+        $token = $request->token;
+        $data = (object) json_decode(Crypt::decryptString($token));
+        $requestInstace = $this->requestService->find($data->request_id, $data->email);
+        $receiver = $requestInstace->receivers()->where('email', $data->email)->first();
+
         $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
         $this->documentService->saveDocument(
             $path,
             $document->file->name,
             hash_file('sha256', $path),
             $id,
-            Document::STATUS_IN_PROGRESS
+            Document::STATUS_IN_PROGRESS,
+            $requestInstace->id
         );
-        $token = $request->token;
+        $document->update(['is_show' => 0]);
 
-        $data = (object) json_decode(Crypt::decryptString($token));
-        $request = $this->requestService->find($data->request_id, $data->email);
-        $receiver = $request->receivers()->where('email', $data->email)->first();
         // Ký
 
         $receiver->actions()->updateOrCreate([
             'content' => "<$receiver->email> signed the document",
-            'document_id' => $request->document_id
+            'document_id' => $requestInstace->document_id
         ], []);
 
         $receiver->actions()->updateOrCreate([
             'content' => "<$receiver->email> completed the document",
-            'document_id' => $request->document_id
+            'document_id' => $requestInstace->document_id
         ], []);
+        $receiver->update(['status' => Receiver::STATUS_COMPLETED]);
 
+        Notification::create([
+            'receiver_id' => $receiver->id,
+            'content' => 'Signed a document',
+            'document_id' => $document->id,
+            'status' => Notification::STATUS_COMPLETED
+        ]);
         SendSignToken::where('token', $token)->delete();
         return response()->ok();
     }
@@ -208,5 +228,21 @@ class DocumentController extends Controller
         array_push($array, $document);
         $this->flatNestedDocuments($document->parent, $array);
         return;
+    }
+
+    public function getParentIdOfDocument($id)
+    {
+        $data = [];
+        $document = $this->documentService->find($id);
+        $this->flatNestedDocuments($document, $data);
+        return $data;
+    }
+
+    public function getActionsOfDocument($id)
+    {
+        $data = $this->getParentIdOfDocument($id);
+        $documentIds = collect($data)->pluck('id');
+        $actions = $this->actionService->getActionOfDocuments($documentIds);
+        return response()->ok(ActionResource::collection($actions));
     }
 }

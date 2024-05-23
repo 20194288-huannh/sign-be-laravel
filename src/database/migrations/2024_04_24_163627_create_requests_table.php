@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
-            $table->bigInteger('document_id');
             $table->tinyInteger('type')->default(Request::TYPE_REQUEST);
             $table->date('expired_date')->nullable();
             $table->text('content');

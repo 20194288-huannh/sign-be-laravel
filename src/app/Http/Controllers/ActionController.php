@@ -17,7 +17,7 @@ class ActionController extends Controller
 
     public function index()
     {
-        $documentIds = $this->documentService->getAllDocumentOfUser(auth()->id() ?? 1)->pluck('id');
+        $documentIds = $this->documentService->getAllDocument(auth()->id() ?? 1)->pluck('id');
         $actions = $this->actionService->getActionOfDocuments($documentIds);
         return response()->ok(ActionResource::collection($actions));
     }

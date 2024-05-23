@@ -4,6 +4,7 @@ use App\Http\Controllers\ActionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\UserController;
@@ -46,6 +47,7 @@ Route::controller(SignatureController::class)->prefix('signatures')->group(funct
 
 Route::controller(DocumentController::class)->prefix('documents')->group(function () {
     Route::get('statistics', 'getDocumentStatistic');
+    Route::get('{id}', 'show');
     Route::post('{id}/sign', 'sign');
     Route::post('save', 'save');
     Route::get('', 'index');
@@ -54,6 +56,7 @@ Route::controller(DocumentController::class)->prefix('documents')->group(functio
     Route::post('{id}/sign-own', 'saveSignOwn');
     Route::post('{id}/send-sign', 'sendSign');
     Route::post('{sha}/history', 'history');
+    Route::get('{id}/actions', 'getActionsOfDocument');
 });
 
 Route::controller(FileController::class)->prefix('files')->group(function () {
@@ -66,5 +69,9 @@ Route::controller(RequestController::class)->prefix('requests')->group(function 
 });
 
 Route::controller(ActionController::class)->prefix('actions')->group(function () {
+    Route::get('', 'index');
+});
+
+Route::controller(NotificationController::class)->prefix('notifications')->group(function () {
     Route::get('', 'index');
 });

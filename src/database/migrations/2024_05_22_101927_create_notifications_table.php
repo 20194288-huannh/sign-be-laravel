@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('receiver_id');
             $table->string('content');
+            $table->tinyInteger('status');
             $table->unsignedInteger('document_id');
             $table->timestamps();
         });

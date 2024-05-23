@@ -12,6 +12,10 @@ class Receiver extends Model
     const TYPE_SIGNER = 0;
     const TYPE_CC = 1;
 
+    const STATUS_SENT = 1;
+    const STATUS_VIEWED = 2;
+    const STATUS_COMPLETED = 3;
+
     protected $guarded = [];
 
     /**

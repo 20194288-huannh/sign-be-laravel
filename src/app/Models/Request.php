@@ -25,8 +25,8 @@ class Request extends Model
         return $this->hasMany(RequestSignature::class, 'request_id');
     }
 
-    public function document(): BelongsTo
+    public function documents(): HasMany
     {
-        return $this->belongsTo(Document::class);
+        return $this->hasMany(Document::class);
     }
 }

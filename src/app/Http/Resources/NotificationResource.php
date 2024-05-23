@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Document;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DocumentResource extends JsonResource
+class NotificationResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,14 +17,12 @@ class DocumentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'receiver' => new ReceiverResource($this->receiver),
+            'document' => new DocumentResource($this->document),
+            'content' => $this->content,
             'id' => $this->id,
-            'sha256' => $this->sha256,
             'status' => $this->status,
-            'user' => new UserResource($this->user),
-            'parent_id' => $this->parent_id,
-            'request' => new RequestResource($this->request),
-            'file' => new FileResource($this->file),
-            'requested_on' => Carbon::parse($this->created_at)->format('M d, Y h:i:s A')
+            'created_at' => Carbon::parse($this->created_at)->format('M d, Y h:i:s A')
         ];
     }
 }
