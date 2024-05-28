@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RequestDetailResource;
 use App\Models\Notification;
 use App\Models\Receiver;
+use App\Models\SendSignToken;
 use App\Services\NotificationService;
 use App\Services\RequestService;
 use Exception;
@@ -25,6 +26,13 @@ class RequestController extends Controller
         try {
             $data = (object) json_decode(Crypt::decryptString($request->token));
         } catch (Exception $e) {
+            return response()->error(
+                Response::HTTP_NOT_FOUND,
+                '要求されたリソースはシステムに存在しません。'
+            );
+        }
+        $isExistToken = SendSignToken::where('request_id', $data->request_id)->where('token', $request->token)->first();
+        if (!$isExistToken) {
             return response()->error(
                 Response::HTTP_NOT_FOUND,
                 '要求されたリソースはシステムに存在しません。'
