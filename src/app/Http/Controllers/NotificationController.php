@@ -18,4 +18,10 @@ class NotificationController extends Controller
         $notifications = Notification::whereIn('document_id', $documents->pluck('id'))->latest()->get();
         return response()->ok(NotificationResource::collection($notifications));
     }
+
+    public function destroy(int $id)
+    {
+        Notification::where('id', $id)->delete();
+        return response()->ok();
+    }
 }

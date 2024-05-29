@@ -127,6 +127,22 @@ class DocumentController extends Controller
                 'request_id' => $request->id,
                 'token' => $token
             ]);
+
+            $pattern = '/SENDER_NAME|SENDER_EMAIL_ID|DOCUMENT_NAME/';
+
+            // Hàm callback để thay thế các phần tử
+            $replacement = function ($matches) use ($document) {
+                switch ($matches[0]) {
+                    case 'SENDER_NAME':
+                        return auth('user')->user()->name;
+                    case 'SENDER_EMAIL_ID':
+                        return auth('user')->user()->email;
+                    case 'DOCUMENT_NAME':
+                        return $document->file->name;
+                }
+            };
+
+            $title = preg_replace_callback($pattern, $replacement, $request->title);
             $beautymail = app()->make(Beautymail::class);
             $beautymail->send('mails.sign', [
                 'document' => $document,
@@ -135,18 +151,18 @@ class DocumentController extends Controller
                 ],
                 'url' => config('app.fe_url') . 'signed-document?token=' . $token,
                 'signer' => $signer
-            ], function ($message) use ($signer, $ccEmail) {
+            ], function ($message) use ($signer, $ccEmail, $request, $title) {
                 if (count($ccEmail)) {
                     $message
                         ->from('huan.nh194288@sis.hust.edu.vn')
                         ->to($signer['email'], $signer['name'])
                         ->cc(...$ccEmail)
-                        ->subject('Needs Your Signature for the Documents!');
+                        ->subject($title);
                 } else {
                     $message
                         ->from('huan.nh194288@sis.hust.edu.vn')
                         ->to($signer['email'], $signer['name'])
-                        ->subject('Needs Your Signature for the Documents!');
+                        ->subject($title);
                 }
             });
         }
@@ -173,7 +189,6 @@ class DocumentController extends Controller
         $document->update(['is_show' => 0]);
 
         // Ký
-
         $receiver->actions()->updateOrCreate([
             'content' => "<$receiver->email> signed the document",
             'document_id' => $requestInstace->document_id
@@ -191,8 +206,30 @@ class DocumentController extends Controller
             'document_id' => $document->id,
             'status' => Notification::STATUS_COMPLETED
         ]);
+        $receiver->actions()->updateOrCreate([
+            'content' => "<$receiver->email> signed the document",
+            'document_id' => $document->id
+        ], []);
+
+        $this->isCompletedDocument($requestInstace);
+
         SendSignToken::where('token', $token)->delete();
         return response()->ok();
+    }
+
+    private function isCompletedDocument($request)
+    {
+        $isCompleted = true;
+        foreach ($request->receivers as $receiver) {
+            if ($receiver->status !== Receiver::STATUS_COMPLETED) {
+                $isCompleted = false;
+                break;
+            }
+        }
+
+        if ($isCompleted) {
+            $request->documents()->isShow()->update(['status' => Document::STATUS_COMPLETED]);
+        }
     }
 
     public function save1($id)

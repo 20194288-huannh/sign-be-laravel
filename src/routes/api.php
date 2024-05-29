@@ -74,4 +74,5 @@ Route::controller(ActionController::class)->prefix('actions')->group(function ()
 
 Route::controller(NotificationController::class)->prefix('notifications')->group(function () {
     Route::get('', 'index');
+    Route::delete('{id}', 'destroy');
 });
