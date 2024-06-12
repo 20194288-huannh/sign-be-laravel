@@ -253,7 +253,8 @@ class DocumentService
         $realWidth = $position['width'] *  (1 - $widthDiffPercent / 100);
         $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
 
-        $pdf->SetFont('Times', 'I', 18);
+        $pdf->AddFont('Poppins-Regular', '', 'CustomFont.php', './Font');
+        $pdf->SetFont('Poppins-Regular', '', 18);
         $pdf->setXY($realXPosition, $realYPosition);
         $pdf->Write(0, $data);
 

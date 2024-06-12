@@ -6,6 +6,7 @@ use App\Http\Resources\RequestDetailResource;
 use App\Models\Notification;
 use App\Models\Receiver;
 use App\Models\SendSignToken;
+use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\RequestService;
 use Exception;
@@ -28,16 +29,29 @@ class RequestController extends Controller
         } catch (Exception $e) {
             return response()->error(
                 Response::HTTP_NOT_FOUND,
-                '要求されたリソースはシステムに存在しません。'
+                'Invalid Token'
             );
         }
         $isExistToken = SendSignToken::where('request_id', $data->request_id)->where('token', $request->token)->first();
         if (!$isExistToken) {
             return response()->error(
                 Response::HTTP_NOT_FOUND,
-                '要求されたリソースはシステムに存在しません。'
+                'Token not exists',
+                ['email' => $request->email]
             );
         }
+
+        $isExistUser = User::where('email', $data->email)->first();
+        if (!$isExistUser) {
+            return response()->error(
+                Response::HTTP_FORBIDDEN,
+                "User does not exist",
+                ['email' => $data->email]
+            );
+        }
+
+
+
         $request = $this->requestService->find($data->request_id, $data->email);
         $document = $request->documents()->isShow()->first();
         $receiver = $request->receivers()->where('email', $data->email)->first();

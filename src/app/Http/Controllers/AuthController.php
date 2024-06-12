@@ -81,7 +81,14 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        return new UserResource($this->userService->register($request->validated()));
+        $user = $this->userService->register($request->validated());
+        $token = auth()->login($user);
+        return response()->ok([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => new UserResource($user)
+        ]);
     }
 
     /**
