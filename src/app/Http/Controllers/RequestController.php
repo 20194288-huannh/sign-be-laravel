@@ -50,8 +50,21 @@ class RequestController extends Controller
             );
         }
 
+        if(!auth()->check()) {
+            return response()->error(
+                Response::HTTP_UNAUTHORIZED,
+                "Authorize",
+                ['email' => $data->email]
+            );
+        }
 
-
+        if(auth()->user()->email !== $data->email) {
+            return response()->error(
+                Response::HTTP_UNAUTHORIZED,
+                "Authorize",
+                ['email' => $data->email]
+            );
+        }
         $request = $this->requestService->find($data->request_id, $data->email);
         $document = $request->documents()->isShow()->first();
         $receiver = $request->receivers()->where('email', $data->email)->first();

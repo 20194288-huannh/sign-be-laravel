@@ -134,9 +134,9 @@ class DocumentController extends Controller
             $replacement = function ($matches) use ($document) {
                 switch ($matches[0]) {
                     case 'SENDER_NAME':
-                        return auth('user')->user()->name;
+                        return auth()->user()->name;
                     case 'SENDER_EMAIL_ID':
-                        return auth('user')->user()->email;
+                        return auth()->user()->email;
                     case 'DOCUMENT_NAME':
                         return $document->file->name;
                 }
@@ -213,8 +213,8 @@ class DocumentController extends Controller
 
         $this->isCompletedDocument($requestInstace);
 
-        SendSignToken::where('token', $token)->delete();
-        return response()->ok();
+        // SendSignToken::where('token', $token)->delete();
+        return Storage::download($path);
     }
 
     private function isCompletedDocument($request)
