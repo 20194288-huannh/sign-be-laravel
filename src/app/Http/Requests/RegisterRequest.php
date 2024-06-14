@@ -25,7 +25,9 @@ class RegisterRequest extends BaseFormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
-            'wallet_address' => 'nullable',
+            'wallet_address' => 'required',
+            'public_key' => 'required|string',
+            'private_key' => 'required|string',
         ];
     }
 }

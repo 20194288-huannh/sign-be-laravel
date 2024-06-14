@@ -28,8 +28,9 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $credentials = request(['email', 'password']);
+        $credentials = request(['email', 'password', 'wallet_address']);
 
+        info($credentials);
         $token = auth()->attempt($credentials);
         if ($token === false) {
             return response()->error(
@@ -38,6 +39,12 @@ class AuthController extends Controller
             );
         }
         $user = $this->userService->getByEmail($request->email);
+        if ($user->wallet_address !== $request->wallet_address) {
+            return response()->error(
+                Response::HTTP_UNAUTHORIZED,
+                'Incorrect Wallet Address.'
+            );
+        }
 
         return response()->ok([
             'access_token' => $token,
