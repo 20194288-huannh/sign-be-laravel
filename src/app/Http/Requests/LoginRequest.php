@@ -23,7 +23,8 @@ class LoginRequest extends BaseFormRequest
     {
         return [
             'email' => 'required|string|email',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6',
+            'wallet_address' => 'required|string',
         ];
     }
 }
