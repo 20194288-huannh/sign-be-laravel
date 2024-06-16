@@ -36,6 +36,7 @@ Route::controller((AuthController::class))->prefix('auth')->group(function () {
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
+    Route::get('email', [UserController::class, 'getByEmail']);
     Route::get('documents', [DocumentController::class, 'getDocumentByUser']);
     Route::post('key', [UserController::class, 'verifyPrivateKey']);
 });
