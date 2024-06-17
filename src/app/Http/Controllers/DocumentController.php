@@ -184,7 +184,7 @@ class DocumentController extends Controller
             hash_file('sha256', $path),
             $id,
             Document::STATUS_IN_PROGRESS,
-            $requestInstace->id
+            $requestInstace
         );
         $document->update(['is_show' => 0]);
 

@@ -37,15 +37,16 @@ class DocumentService
         return Document::findOrFail($id);
     }
 
-    public function saveDocument(string $path, string $filename, string $sha, ?int $parentId, $status, ?int $requestId)
+    public function saveDocument(string $path, string $filename, string $sha, ?int $parentId, $status, ?Request $request)
     {
         $ext = pathinfo($path, PATHINFO_EXTENSION);
         $document = Document::create([
             'sha256' => $sha,
             'status' => $status,
-            'user_id' => auth()->id() ?? 1,
+            'user_id' => auth()->id(),
             'parent_id' => $parentId,
-            'request_id' => $requestId
+            'request_id' => $request->id ?? null,
+            'receiver' => $request->user_id ?? null
         ]);
 
         $document->file()->create([
@@ -60,7 +61,11 @@ class DocumentService
     public function getByUser(string $status, ?string $filter)
     {
         $statusFilter = explode(',', $status);
-        $query = Document::getByUserId(auth()->id() ?? 1)->isShow();
+        $query = Document::where(function ($query) {
+            $query->where('user_id', auth()->id())->orWhereHas('request', function ($qu) {
+                $qu->where('user_id', auth()->id());
+            });
+        })->isShow();
         if ($status) {
             $query->hasStatus($statusFilter);
         }
@@ -190,7 +195,7 @@ class DocumentService
             hash_file('sha256', $path),
             $documentId,
             Document::STATUS_SENT,
-            $request->id
+            $request
         );
         $document->update(['is_show' => 0]);
 
@@ -253,8 +258,9 @@ class DocumentService
         $realWidth = $position['width'] *  (1 - $widthDiffPercent / 100);
         $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
 
-        $pdf->AddFont('Poppins-Regular', '', 'CustomFont.php', './Font');
-        $pdf->SetFont('Poppins-Regular', '', 18);
+        // $pdf->AddFont('Poppins-Regular', '', 'CustomFont.php', './Font');
+        // $pdf->SetFont('Poppins-Regular', '', 18);
+        $pdf->SetFont('Times', 'I', 14);
         $pdf->setXY($realXPosition, $realYPosition);
         $pdf->Write(0, $data);
 
