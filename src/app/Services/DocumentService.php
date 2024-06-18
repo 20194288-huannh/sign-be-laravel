@@ -156,6 +156,7 @@ class DocumentService
         $path = 'documents/' . $filename . '.pdf';
         // $document->signatures()->sync($saveSignatures);
         $pdf->Output('F', $path);
+        $document->update(['is_show' => 0]);
         return $path;
     }
 
@@ -197,7 +198,6 @@ class DocumentService
             Document::STATUS_SENT,
             $request
         );
-        $document->update(['is_show' => 0]);
 
         $receivers = $request->receivers()->createMany($users);
 
@@ -258,11 +258,12 @@ class DocumentService
         $realWidth = $position['width'] *  (1 - $widthDiffPercent / 100);
         $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
 
-        // $pdf->AddFont('Poppins-Regular', '', 'CustomFont.php', './Font');
-        // $pdf->SetFont('Poppins-Regular', '', 18);
-        $pdf->SetFont('Times', 'I', 14);
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php', './Font');
+        $pdf->SetFont('Poppins-Regular', '', 15 / 1.2);
+        // $pdf->SetFont('Times', 'I', 14);
         $pdf->setXY($realXPosition, $realYPosition);
-        $pdf->Write(0, $data);
+        $pdf->Cell($realWidth, $realHeight, $data, 0, 1, 'L');
+        // $pdf->Write(0, $data);
 
         return [
             'x' => $realXPosition,
