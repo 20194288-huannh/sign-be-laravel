@@ -60,10 +60,13 @@ class DocumentService
 
     public function getByUser(string $status, ?string $filter)
     {
+        $user = User::findOrFail(auth()->id());
         $statusFilter = explode(',', $status);
-        $query = Document::where(function ($query) {
-            $query->where('user_id', auth()->id())->orWhereHas('request', function ($qu) {
-                $qu->where('user_id', auth()->id());
+        $query = Document::where(function ($query) use ($user) {
+            $query->where('user_id', auth()->id())->orWhereHas('request', function ($qu) use ($user) {
+                $qu->where('user_id', auth()->id())->orWhereHas('receivers', function ($qu) use ($user) {
+                    $qu->where('email', $user->email);
+                });
             });
         })->isShow();
         if ($status) {

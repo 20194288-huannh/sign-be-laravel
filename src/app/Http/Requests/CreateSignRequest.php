@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class SaveDocumentRequest extends BaseFormRequest
+class CreateSignRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +20,10 @@ class SaveDocumentRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file'
+            'signatures' => 'required|array',
+            'signatures.*.page' => 'required|numeric',
+            'token' => 'required|string',
+            'signatures.*.data' => 'required|array',
         ];
     }
 }
