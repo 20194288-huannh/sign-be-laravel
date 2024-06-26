@@ -136,15 +136,16 @@ class DocumentService
 
             $position = $signatures[$currentSignatureIdx]['position'];
             $info = $signatures[$currentSignatureIdx]['data'];
+            $scale = $signatures[$currentSignatureIdx]['scale'];
 
             switch ($signatures[$currentSignatureIdx]['type']) {
                 case Signature::TYPE_IMAGE:
-                    $position = $this->addImageToDocument($pdf, $position, $info, $size, $canvas);
+                    $position = $this->addImageToDocument($pdf, $position, $info, $size, $canvas, $scale);
                     $position['page'] = $currentPage;
                     $saveSignatures[$info['id']] = $position;
                     break;
                 case Signature::TYPE_TEXT:
-                    $position = $this->addTextToDocument($pdf, $position, $info, $size, $canvas);
+                    $position = $this->addTextToDocument($pdf, $position, $info, $size, $canvas, $scale);
                     $position['page'] = $currentPage;
                     break;
                 case 4:
@@ -252,7 +253,7 @@ class DocumentService
     }
 
 
-    private function addTextToDocument(&$pdf, $position, string $data, $size, $canvas)
+    private function addTextToDocument(&$pdf, $position, string $data, $size, $canvas, $scale)
     {
         $widthDiffPercent = ($canvas['width'] - $size['width']) / $canvas['width'] * 100;
         $heightDiffPercent = ($canvas['height'] - $size['height']) / $canvas['height'] * 100;
@@ -262,7 +263,7 @@ class DocumentService
         $realHeight = $position['height'] *  (1 - $heightDiffPercent / 100);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php', './Font');
-        $pdf->SetFont('Poppins-Regular', '', 15 / 1.2);
+        $pdf->SetFont('Poppins-Regular', '', 15 / $scale);
         // $pdf->SetFont('Times', 'I', 14);
         $pdf->setXY($realXPosition, $realYPosition);
         $pdf->Cell($realWidth, $realHeight, $data, 0, 1, 'L');

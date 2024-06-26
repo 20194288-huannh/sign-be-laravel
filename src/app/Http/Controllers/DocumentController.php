@@ -7,6 +7,7 @@ use App\Http\Requests\CreateDocumentRequest;
 use App\Http\Requests\CreateSignRequest;
 use App\Http\Requests\SaveDocumentRequest;
 use App\Http\Requests\SaveSignOwnDocumentRequest;
+use App\Http\Requests\SendSignRequest;
 use App\Http\Resources\ActionResource;
 use App\Http\Resources\DocumentCollection;
 use App\Http\Resources\DocumentResource;
@@ -96,7 +97,7 @@ class DocumentController extends Controller
         return response()->ok($data);
     }
 
-    public function sendSign($id, Request $sendSignRequest)
+    public function sendSign($id, SendSignRequest $sendSignRequest)
     {
         $data = $this->documentService->sendSign($id, $sendSignRequest->all());
 
@@ -178,7 +179,7 @@ class DocumentController extends Controller
         $data = (object) json_decode(Crypt::decryptString($token));
         $requestInstace = $this->requestService->find($data->request_id, $data->email);
         $receiver = $requestInstace->receivers()->where('email', $data->email)->first();
-        
+
         $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
         info(2);
         $this->documentService->saveDocument(
@@ -191,20 +192,20 @@ class DocumentController extends Controller
         );
         $document->update(['is_show' => 0]);
         info(3);
-        
+
         // Ký
         $receiver->actions()->updateOrCreate([
             'content' => "<$receiver->email> signed the document",
             'document_id' => $requestInstace->document_id
         ], []);
-        
+
         info(4);
         $receiver->actions()->updateOrCreate([
             'content' => "<$receiver->email> completed the document",
             'document_id' => $requestInstace->document_id
         ], []);
         $receiver->update(['status' => Receiver::STATUS_COMPLETED]);
-        
+
         info(5);
         Notification::create([
             'receiver_id' => $receiver->id,
