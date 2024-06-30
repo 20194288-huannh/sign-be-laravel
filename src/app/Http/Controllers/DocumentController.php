@@ -216,7 +216,7 @@ class DocumentController extends Controller
 
         $this->isCompletedDocument($requestInstace);
 
-        // SendSignToken::where('token', $token)->delete();
+        SendSignToken::where('token', $token)->delete();
         return Storage::download($path);
     }
 
