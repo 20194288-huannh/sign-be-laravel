@@ -25,8 +25,11 @@ class RequestController extends Controller
     public function show(Request $request)
     {
         try {
+            info($request->token);
             $data = (object) json_decode(Crypt::decryptString($request->token));
+            info($data);
         } catch (Exception $e) {
+            info($e);
             return response()->error(
                 Response::HTTP_NOT_FOUND,
                 'Invalid Token'

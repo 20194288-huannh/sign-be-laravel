@@ -38,7 +38,7 @@ class AuthController extends Controller
             );
         }
         $user = $this->userService->getByEmail($request->email);
-        if ($user->wallet_address !== $request->wallet_address) {
+        if (strtolower($user->wallet_address) !== strtolower($request->wallet_address)) {
             return response()->error(
                 Response::HTTP_UNAUTHORIZED,
                 'Incorrect Wallet Address.'

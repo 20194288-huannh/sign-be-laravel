@@ -175,13 +175,11 @@ class DocumentController extends Controller
     {
         $document = Document::find($id);
         $token = $request->token;
-        info(1);
         $data = (object) json_decode(Crypt::decryptString($token));
         $requestInstace = $this->requestService->find($data->request_id, $data->email);
         $receiver = $requestInstace->receivers()->where('email', $data->email)->first();
 
         $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
-        info(2);
         $this->documentService->saveDocument(
             $path,
             $document->file->name,
@@ -191,7 +189,6 @@ class DocumentController extends Controller
             $requestInstace
         );
         $document->update(['is_show' => 0]);
-        info(3);
 
         // Ký
         $receiver->actions()->updateOrCreate([
@@ -199,7 +196,6 @@ class DocumentController extends Controller
             'document_id' => $requestInstace->document_id
         ], []);
 
-        info(4);
         $receiver->actions()->updateOrCreate([
             'content' => "<$receiver->email> completed the document",
             'document_id' => $requestInstace->document_id

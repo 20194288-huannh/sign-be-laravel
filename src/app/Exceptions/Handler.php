@@ -10,6 +10,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -97,8 +98,12 @@ class Handler extends ExceptionHandler
         if ($e instanceof ModelNotFoundException) {
             return response()->error(
                 Response::HTTP_NOT_FOUND,
-                '要求されたリソースはシステムに存在しません。'
+                'Not Found.'
             );
+        }
+
+        if (class_exists($e::class) && is_subclass_of($e, HttpException::class)) {
+            return response()->error($e->getStatusCode(), $e->getMessage());
         }
 
         return response()->error(

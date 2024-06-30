@@ -26,4 +26,12 @@ class CreateSignRequest extends BaseFormRequest
             'signatures.*.data' => 'required|array',
         ];
     }
+
+    
+    public function messages()
+    {
+        return [
+            'signatures.*.data' => 'Need Your Signature!'
+        ];
+    }
 }

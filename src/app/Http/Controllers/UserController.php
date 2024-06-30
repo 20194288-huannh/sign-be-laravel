@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NotFoundException;
+use App\Exceptions\UnprocessableContentException;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -20,7 +22,11 @@ class UserController extends Controller
 
     public function getByEmail(Request $request)
     {
-        return response()->ok(new UserResource($this->userService->getByEmail($request->email)));
+        $user = $this->userService->getByEmail($request->email); 
+        if (!$user) {
+            throw new UnprocessableContentException('The selected email does not exist in our records.');
+        }
+        return response()->ok(new UserResource($user));
     }
 
     public function verifyPrivateKey(Request $request)

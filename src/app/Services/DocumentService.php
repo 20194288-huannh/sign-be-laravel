@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\Exceptions\UnauthorizeException;
 use App\Models\Document;
 use App\Models\File;
 use App\Models\Request;
 use App\Models\Signature;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
@@ -60,6 +62,12 @@ class DocumentService
 
     public function getByUser(string $status, ?string $filter)
     {
+        if (!auth()->id()) {
+            throw new UnauthorizeException(
+                Response::HTTP_UNAUTHORIZED,
+                'Unauthorized access. Please provide valid credentials to proceed.'
+            );
+        }
         $user = User::findOrFail(auth()->id());
         $statusFilter = explode(',', $status);
         $query = Document::where(function ($query) use ($user) {

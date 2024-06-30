@@ -21,7 +21,7 @@ class SendSignRequest extends BaseFormRequest
     {
         return [
             'users' => 'required|array',
-            'users.*.name' => 'required|email',
+            'users.*.name' => 'required|string',
             'users.*.email' => 'required|email',
             'users.*.type' => 'required|integer',
 
