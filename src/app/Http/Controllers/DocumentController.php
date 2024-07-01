@@ -179,7 +179,17 @@ class DocumentController extends Controller
         $requestInstace = $this->requestService->find($data->request_id, $data->email);
         $receiver = $requestInstace->receivers()->where('email', $data->email)->first();
 
-        $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
+
+        // Sử dụng array_filter để loại bỏ các đối tượng null trong signatures
+        $signatures = array_filter($request->signatures, function($value) {
+            return !is_null($value);
+        });
+  
+        // Tái chỉ mục lại mảng
+        $signatures = array_values($signatures);
+
+
+        $path = $this->documentService->sign($id, $signatures, $request->canvas);
         $this->documentService->saveDocument(
             $path,
             $document->file->name,
@@ -202,7 +212,6 @@ class DocumentController extends Controller
         ], []);
         $receiver->update(['status' => Receiver::STATUS_COMPLETED]);
 
-        info(5);
         Notification::create([
             'receiver_id' => $receiver->id,
             'content' => 'Signed a document',
@@ -243,7 +252,14 @@ class DocumentController extends Controller
 
     public function signOwn(Request $request, $id)
     {
-        $path = $this->documentService->sign($id, $request->signatures, $request->canvas);
+        // Sử dụng array_filter để loại bỏ các đối tượng null trong signatures
+        $signatures = array_filter($request->signatures, function($value) {
+            return !is_null($value);
+        });
+  
+        // Tái chỉ mục lại mảng
+        $signatures = array_values($signatures);
+        $path = $this->documentService->sign($id, $signatures, $request->canvas);
 
         return Storage::download($path);
     }

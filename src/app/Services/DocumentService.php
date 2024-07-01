@@ -156,6 +156,10 @@ class DocumentService
                     $position = $this->addTextToDocument($pdf, $position, $info, $size, $canvas, $scale);
                     $position['page'] = $currentPage;
                     break;
+                case Signature::TYPE_DATE:
+                    $position = $this->addTextToDocument($pdf, $position, Carbon::createFromTimestamp($info / 1000)->format('Y-m-d'), $size, $canvas, $scale);
+                    $position['page'] = $currentPage;
+                    break;
                 case 4:
                     echo "i equals 2";
                     break;

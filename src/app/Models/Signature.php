@@ -12,6 +12,7 @@ class Signature extends Model
     use HasFactory;
     const TYPE_IMAGE = 1;
     const TYPE_TEXT = 3;
+    const TYPE_DATE = 2;
     protected $guarded = [];
 
     public function file(): MorphOne
