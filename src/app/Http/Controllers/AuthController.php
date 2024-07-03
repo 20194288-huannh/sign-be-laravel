@@ -18,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct(public UserService $userService)
     {
-        $this->middleware('auth:user', ['except' => ['login', 'register']]);
+        $this->middleware('auth:user', ['except' => ['login', 'register', 'verify']]);
     }
 
     /**
@@ -95,6 +95,11 @@ class AuthController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => new UserResource($user)
         ]);
+    }
+
+    public function verify(RegisterRequest $request)
+    {
+        return response()->ok();
     }
 
     /**
