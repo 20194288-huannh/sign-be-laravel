@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ class RequestDetailResource extends JsonResource
             'users' => ReceiverResource::collection($this->receivers),
             'email' => [
                 'subject' => $this->title,
-                'expired_date' => $this->expired_date,
+                'expired_date' => Carbon::parse($this->expired_date)->format('M d, Y h:i:s A'),
                 'content' => $this->content
             ],
             'signatures' => RequestSignatureResource::collection($this->requestSignatures),

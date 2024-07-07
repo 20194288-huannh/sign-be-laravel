@@ -206,6 +206,7 @@ class DocumentService
         if ($signatures) {
             $path = $this->sign($documentId, $signatures, $canvas);
         }
+        $document->update(['is_show' => 0]);
         $newDocument = $this->saveDocument(
             $path,
             $document->file->name,
